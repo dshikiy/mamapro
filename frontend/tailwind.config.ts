@@ -9,18 +9,18 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Wellness palette - мягкие, тёплые, спокойные цвета
-        cream: '#F9F6F3',
-        beige: '#F5E6D3',
-        'soft-pink': '#F0D9D1',
-        'lavender': '#E8D5F2',
-        'sage': '#D4E5D9',
+        // Обновленная палитра - свежая и чистая
+        cream: '#F8F9FA',       // Очень светлый, чистый фон (светло-серый/белый)
+        beige: '#E9ECEF',       // Светлый серый для акцентов
+        'soft-pink': '#F4E6E8', // Очень нежный розовый
+        'lavender': '#E2E0EB',  // Нежный лавандовый
+        'sage': '#E0EAE5',      // Светлый мятно-полынный
         
-        // Darker tones для текста и действий
-        'warm-gray': '#8B8680',
-        'dark-text': '#5A5A5A',
-        'accent-pink': '#D4A5A0',
-        'accent-purple': '#C9A8D8',
+        // Текст и основные акценты
+        'warm-gray': '#6C757D',
+        'dark-text': '#212529',
+        'accent-pink': '#D69EAB', // Красивый пудровый
+        'accent-purple': '#A6A2C2',
       },
       spacing: {
         '18': '4.5rem',

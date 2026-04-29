@@ -1,23 +1,36 @@
-import './globals.css';
+import '../styles/globals.css';
 
 import React from 'react';
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
+import BottomNav from '@/components/layout/BottomNav';
 
 export const metadata: Metadata = {
-  title: 'MamPro - Support for Moms',
-  description: 'Connect with specialists, learn from experts, and find support.',
+  title: 'MamaPro - Поддержка для мам',
+  description: 'Общайтесь со специалистами, проходите курсы и находите поддержку в безопасном цифровом пространстве.',
+};
+
+export const viewport: Viewport = {
+  themeColor: '#F9F6F3',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="ru">
       <head>
         <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="theme-color" content="#F9F6F3" />
       </head>
-      <body className="bg-cream">
-        {children}
+      <body 
+        className="text-dark-text font-sans antialiased pb-24"
+        style={{ background: 'linear-gradient(135deg, #FBCFE8 0%, #FECDD3 50%, #FFEDD5 100%)', minHeight: '100vh' }}
+      >
+        <main className="max-w-md mx-auto min-h-screen relative shadow-2xl overflow-x-hidden bg-transparent">
+          {children}
+          <BottomNav />
+        </main>
       </body>
     </html>
   );
