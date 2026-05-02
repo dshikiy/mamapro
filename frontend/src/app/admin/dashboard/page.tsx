@@ -22,7 +22,6 @@ import {
   Edit,
   Sparkles,
   ArrowLeft,
-  X
 } from 'lucide-react';
 
 import api from '@/lib/api';
@@ -107,7 +106,7 @@ export default function AdminDashboardPage() {
   const [courses, setCourses] = useState<AdminCourse[]>([]);
   const [lessons, setLessons] = useState<any[]>([]);
   const [stats, setStats] = useState<AdminStats | null>(null);
-  
+
   // UI states
   const [loading, setLoading] = useState(true);
   const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
@@ -116,16 +115,16 @@ export default function AdminDashboardPage() {
   const [subMap, setSubMap] = useState<Record<string, string>>({});
   const [saveStatus, setSaveStatus] = useState<Record<string, string>>({});
   const [toast, setToast] = useState<{ message: string, type: 'success' | 'error' } | null>(null);
-  
+
   const [isCourseModalOpen, setIsCourseModalOpen] = useState(false);
   const [editingCourse, setEditingCourse] = useState<AdminCourse | null>(null);
-  
+
   const [isLessonModalOpen, setIsLessonModalOpen] = useState(false);
   const [editingLesson, setEditingLesson] = useState<any | null>(null);
 
   const [isSpecialistModalOpen, setIsSpecialistModalOpen] = useState(false);
   const [isMarathonModalOpen, setIsMarathonModalOpen] = useState(false);
-  
+
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -374,7 +373,7 @@ export default function AdminDashboardPage() {
         </nav>
 
         <div className="pt-10 border-t border-beige">
-          <button 
+          <button
             onClick={() => router.push('/')}
             className="w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl text-warm-gray hover:bg-cream hover:text-dark-text transition-all font-bold text-sm"
           >
@@ -472,7 +471,7 @@ export default function AdminDashboardPage() {
                     >
                       {roleOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
                     </select>,
-                    <select 
+                    <select
                       key={3}
                       className={`border rounded-xl px-3 py-1.5 text-xs font-bold outline-none transition ${subMap[u.id] === 'pro' ? 'bg-amber-50 border-amber-200 text-amber-700' : 'bg-cream border-beige text-warm-gray'}`}
                       value={subMap[u.id] || 'free'}
@@ -600,13 +599,13 @@ export default function AdminDashboardPage() {
                     </div>
                   ) : (
                     <div className="animate-in fade-in slide-in-from-left-4 duration-300">
-                      <button 
+                      <button
                         onClick={() => setSelectedCourseId(null)}
                         className="mb-6 flex items-center gap-2 text-sm font-bold text-warm-gray hover:text-dark-text transition"
                       >
                         <ArrowLeft size={16} /> Назад к курсам
                       </button>
-                      
+
                       <div className="bg-white rounded-[2rem] p-8 border border-beige shadow-card mb-8">
                         <div className="flex justify-between items-center mb-8">
                           <div>
@@ -615,7 +614,7 @@ export default function AdminDashboardPage() {
                             </h2>
                             <p className="text-sm text-warm-gray">Управление уроками курса</p>
                           </div>
-                          <button 
+                          <button
                             onClick={() => { setEditingLesson(null); setIsLessonModalOpen(true); }}
                             className="bg-dark-text text-white px-5 py-2.5 rounded-2xl font-bold text-sm shadow-warm flex items-center gap-2 hover:bg-black transition"
                           >
@@ -698,19 +697,19 @@ export default function AdminDashboardPage() {
       </main>
 
       {/* Modals */}
-      <CourseModal 
-        isOpen={isCourseModalOpen} 
-        onClose={() => setIsCourseModalOpen(false)} 
-        course={editingCourse} 
-        onSuccess={() => { loadCourses(); setIsCourseModalOpen(false); showToast(editingCourse ? 'Курс обновлен' : 'Курс создан'); }} 
+      <CourseModal
+        isOpen={isCourseModalOpen}
+        onClose={() => setIsCourseModalOpen(false)}
+        course={editingCourse}
+        onSuccess={() => { loadCourses(); setIsCourseModalOpen(false); showToast(editingCourse ? 'Курс обновлен' : 'Курс создан'); }}
       />
-      
-      <LessonModal 
-        isOpen={isLessonModalOpen} 
-        onClose={() => setIsLessonModalOpen(false)} 
-        courseId={selectedCourseId || ''} 
+
+      <LessonModal
+        isOpen={isLessonModalOpen}
+        onClose={() => setIsLessonModalOpen(false)}
+        courseId={selectedCourseId || ''}
         lesson={editingLesson}
-        onSuccess={() => { if (selectedCourseId) loadLessons(selectedCourseId); setIsLessonModalOpen(false); showToast(editingLesson ? 'Урок обновлен' : 'Урок добавлен'); }} 
+        onSuccess={() => { if (selectedCourseId) loadLessons(selectedCourseId); setIsLessonModalOpen(false); showToast(editingLesson ? 'Урок обновлен' : 'Урок добавлен'); }}
       />
 
       <CreateSpecialistModal
@@ -727,7 +726,7 @@ export default function AdminDashboardPage() {
             <input required type="number" placeholder="Дни" className="w-full bg-cream border border-beige rounded-2xl px-4 py-3 outline-none focus:border-sage" value={newMarathon.duration_days} onChange={e => setNewMarathon({ ...newMarathon, duration_days: parseInt(e.target.value) })} />
             <input required type="number" placeholder="Цена (₸)" className="w-full bg-cream border border-beige rounded-2xl px-4 py-3 outline-none focus:border-sage" value={newMarathon.price} onChange={e => setNewMarathon({ ...newMarathon, price: parseInt(e.target.value) })} />
           </div>
-          <select 
+          <select
             className="w-full bg-cream border border-beige rounded-2xl px-4 py-3 outline-none focus:border-sage"
             value={newMarathon.instructor_id}
             onChange={e => setNewMarathon({ ...newMarathon, instructor_id: e.target.value })}
@@ -798,8 +797,8 @@ function AdminTable({ headers, rows }: { headers: string[], rows: { id: string, 
 }
 
 function CourseModal({ isOpen, onClose, course, onSuccess }: { isOpen: boolean, onClose: () => void, course: AdminCourse | null, onSuccess: () => void }) {
-  const [form, setForm] = useState({ 
-    title: '', description: '', category: 'Ментальное здоровье', instructor: '', image: '', duration: '', is_pro: false 
+  const [form, setForm] = useState({
+    title: '', description: '', category: 'Ментальное здоровье', instructor: '', image: '', duration: '', is_pro: false
   });
   const [loading, setLoading] = useState(false);
 
@@ -879,8 +878,8 @@ function LessonModal({ isOpen, onClose, courseId, lesson, onSuccess }: { isOpen:
     e.preventDefault();
     setLoading(true);
     try {
-      const data = { 
-        ...form, 
+      const data = {
+        ...form,
         duration: parseInt(form.duration) || 0,
         order: parseInt(form.order) || 0
       };
