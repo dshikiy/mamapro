@@ -95,7 +95,7 @@ const roleOptions = [
 
 export default function AdminDashboardPage() {
   const router = useRouter();
-  const { user, isAuthenticated } = useAuthStore();
+  const { user } = useAuthStore();
   const [activeTab, setActiveTab] = useState<'dashboard' | 'users' | 'marketplace' | 'specialists' | 'appointments' | 'content'>('dashboard');
 
   // Data states
