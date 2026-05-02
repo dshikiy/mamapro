@@ -236,10 +236,10 @@ export const initDb = async () => {
 
       CREATE TABLE IF NOT EXISTS anonymous_questions (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-        user_id UUID REFERENCES users(id),
+        user_id UUID REFERENCES users(id) ON DELETE SET NULL,
         question TEXT NOT NULL,
         answer TEXT,
-        answered_by UUID REFERENCES users(id),
+        answered_by UUID REFERENCES users(id) ON DELETE SET NULL,
         tags VARCHAR(255)[],
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
@@ -332,6 +332,13 @@ export const initDb = async () => {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
 
+      -- Migration: Ensure messages has conversation_id (in case table already existed)
+      DO $$ BEGIN
+        ALTER TABLE messages ADD COLUMN IF NOT EXISTS conversation_id UUID REFERENCES conversations(id) ON DELETE CASCADE;
+      EXCEPTION
+        WHEN others THEN NULL;
+      END $$;
+
       CREATE TABLE IF NOT EXISTS marketplace_likes (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -350,6 +357,5 @@ export const initDb = async () => {
     console.log('✅ База данных успешно инициализирована!');
   } catch (error) {
     console.error('❌ Ошибка при инициализации базы данных:', error);
-    // Не выходим из процесса, чтобы сервер мог запуститься и показать ошибку в логах
   }
 };

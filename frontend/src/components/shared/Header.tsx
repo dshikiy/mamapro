@@ -15,10 +15,6 @@ export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
-  if (pathname?.startsWith('/admin')) {
-    return null;
-  }
-
   useEffect(() => {
     setMounted(true);
     if (isAuthenticated) {
@@ -30,6 +26,11 @@ export default function Header() {
     logout();
     router.push('/');
   };
+
+  // Move the early return to the end or use conditional rendering in the return statement
+  if (pathname?.startsWith('/admin')) {
+    return null;
+  }
 
   return (
     <>

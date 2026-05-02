@@ -35,33 +35,38 @@ export const createListing = asyncHandler(async (req: Request, res: Response) =>
 });
 
 export const getListings = asyncHandler(async (req: Request, res: Response) => {
-  const { category, search } = req.query;
-  const userId = req.user?.userId;
+  try {
+    const { category, search } = req.query;
+    const userId = req.user?.userId;
 
-  let sql = `
-    SELECT l.*, u.name as seller_name,
-    EXISTS(SELECT 1 FROM marketplace_likes WHERE listing_id = l.id AND user_id = $2) as is_liked
-    FROM listings l
-    JOIN users u ON l.user_id = u.id
-    WHERE l.status = $1
-  `;
-  const params: any[] = ['active', userId || null];
+    let sql = `
+      SELECT l.*, u.name as seller_name,
+      EXISTS(SELECT 1 FROM marketplace_likes WHERE listing_id = l.id AND user_id = $2) as is_liked
+      FROM listings l
+      JOIN users u ON l.user_id = u.id
+      WHERE l.status = $1
+    `;
+    const params: any[] = ['active', userId || null];
 
-  if (category && category !== 'Все') {
-    sql += ` AND l.category = $${params.length + 1}`;
-    params.push(category);
+    if (category && category !== 'Все') {
+      sql += ` AND l.category = $${params.length + 1}`;
+      params.push(category);
+    }
+
+    if (search) {
+      sql += ` AND (l.title ILIKE $${params.length + 1} OR l.description ILIKE $${params.length + 1})`;
+      params.push(`%${search}%`);
+    }
+
+    sql += ' ORDER BY l.created_at DESC';
+
+    const result = await query(sql, params);
+
+    res.status(200).json({ success: true, data: result.rows });
+  } catch (error: any) {
+    console.error('CRITICAL ERROR in getListings:', error);
+    res.status(500).json({ success: false, error: error.message, stack: error.stack });
   }
-
-  if (search) {
-    sql += ` AND (l.title ILIKE $${params.length + 1} OR l.description ILIKE $${params.length + 1})`;
-    params.push(`%${search}%`);
-  }
-
-  sql += ' ORDER BY l.created_at DESC';
-
-  const result = await query(sql, params);
-
-  res.status(200).json({ success: true, data: result.rows });
 });
 
 export const getListingById = asyncHandler(async (req: Request, res: Response) => {

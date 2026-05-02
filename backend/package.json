@@ -7,6 +7,7 @@
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
+    "db:init": "ts-node src/scripts/init-db.ts",
     "db:migrate": "psql -U postgres -d mampro -f migrations/*.sql"
   },
   "dependencies": {

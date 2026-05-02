@@ -5,39 +5,51 @@ import { asyncHandler, AppError } from '../middleware/errorHandler';
 
 // ─── GET /api/chat/conversations ───────────────────────────────────────────
 export const getConversations = asyncHandler(async (req: Request, res: Response) => {
-  const userId = req.user!.userId;
+  try {
+    const userId = req.user!.userId;
+    console.log('Fetching conversations for user:', userId);
 
-  const result = await query(
-    `SELECT 
-      c.id, 
-      c.type, 
-      c.title, 
-      c.avatar,
-      c.updated_at,
-      cp.status as participant_status,
-      (SELECT json_build_object(
-        'id', u.id,
-        'name', u.name,
-        'avatar', u.avatar,
-        'role', u.role
-      ) FROM users u 
-        JOIN conversation_participants cp2 ON u.id = cp2.user_id 
-        WHERE cp2.conversation_id = c.id AND u.id != $1 LIMIT 1) as other_user,
-      (SELECT json_build_object(
-        'text', m.text,
-        'sender_id', m.sender_id,
-        'created_at', m.created_at
-      ) FROM messages m 
-        WHERE m.conversation_id = c.id 
-        ORDER BY m.created_at DESC LIMIT 1) as last_message
-     FROM conversations c
-     JOIN conversation_participants cp ON c.id = cp.conversation_id
-     WHERE cp.user_id = $1
-     ORDER BY c.updated_at DESC`,
-    [userId]
-  );
+    const result = await query(
+      `SELECT 
+        c.id, 
+        c.type, 
+        c.title, 
+        c.avatar,
+        c.updated_at,
+        cp.status as participant_status,
+        (SELECT json_build_object(
+          'id', u.id,
+          'name', u.name,
+          'avatar', u.avatar,
+          'role', u.role
+        ) FROM users u 
+          JOIN conversation_participants cp2 ON u.id = cp2.user_id 
+          WHERE cp2.conversation_id = c.id AND u.id != $1 LIMIT 1) as other_user,
+        (SELECT json_build_object(
+          'text', m.text,
+          'sender_id', m.sender_id,
+          'created_at', m.created_at
+        ) FROM messages m 
+          WHERE m.conversation_id = c.id 
+          ORDER BY m.created_at DESC LIMIT 1) as last_message
+       FROM conversations c
+       JOIN conversation_participants cp ON c.id = cp.conversation_id
+       WHERE cp.user_id = $1
+       ORDER BY c.updated_at DESC`,
+      [userId]
+    );
 
-  res.status(200).json({ success: true, data: result.rows });
+    const formattedRows = result.rows.map(row => ({
+      ...row,
+      other_user: row.other_user || null,
+      last_message: row.last_message || null
+    }));
+
+    res.status(200).json({ success: true, data: formattedRows });
+  } catch (error: any) {
+    console.error('CRITICAL ERROR in getConversations:', error);
+    res.status(500).json({ success: false, error: error.message, stack: error.stack });
+  }
 });
 
 // ─── GET /api/chat/messages/:conversationId ───────────────────────────────
@@ -72,56 +84,62 @@ export const getMessages = asyncHandler(async (req: Request, res: Response) => {
 
 // ─── POST /api/chat/start ──────────────────────────────────────────────────
 export const startConversation = asyncHandler(async (req: Request, res: Response) => {
-  const userId = req.user!.userId;
-  const { targetUserId, type = 'direct', title } = req.body;
+  try {
+    const userId = req.user!.userId;
+    const { targetUserId, type = 'direct', title } = req.body;
+    console.log('Starting conversation:', { userId, targetUserId, type });
 
-  if (type === 'direct') {
-    // Check if direct conversation already exists
-    const existing = await query(
-      `SELECT c.id FROM conversations c
-       JOIN conversation_participants cp1 ON c.id = cp1.conversation_id
-       JOIN conversation_participants cp2 ON c.id = cp2.conversation_id
-       WHERE c.type = 'direct' AND cp1.user_id = $1 AND cp2.user_id = $2`,
-      [userId, targetUserId]
-    );
+    if (type === 'direct') {
+      // Check if direct conversation already exists
+      const existing = await query(
+        `SELECT c.id FROM conversations c
+         JOIN conversation_participants cp1 ON c.id = cp1.conversation_id
+         JOIN conversation_participants cp2 ON c.id = cp2.conversation_id
+         WHERE c.type = 'direct' AND cp1.user_id = $1 AND cp2.user_id = $2`,
+        [userId, targetUserId]
+      );
 
-    if (existing.rows.length > 0) {
-      return res.status(200).json({ success: true, data: { id: existing.rows[0].id } });
-    }
-  }
-
-  const convId = uuidv4();
-  await query(
-    'INSERT INTO conversations (id, type, title, created_at, updated_at) VALUES ($1, $2, $3, NOW(), NOW())',
-    [convId, type, title || null]
-  );
-
-  // Add current user as active
-  await query(
-    'INSERT INTO conversation_participants (conversation_id, user_id, status) VALUES ($1, $2, $3)',
-    [convId, userId, 'active']
-  );
-
-  // Add target user as 'request' if it's a new direct chat, otherwise 'active' for group
-  const targetStatus = type === 'direct' ? 'request' : 'active';
-  if (targetUserId) {
-    await query(
-      'INSERT INTO conversation_participants (conversation_id, user_id, status) VALUES ($1, $2, $3)',
-      [convId, targetUserId, targetStatus]
-    );
-  } else if (req.body.participantIds && Array.isArray(req.body.participantIds)) {
-    // For groups
-    for (const pId of req.body.participantIds) {
-      if (pId !== userId) {
-        await query(
-          'INSERT INTO conversation_participants (conversation_id, user_id, status) VALUES ($1, $2, $3)',
-          [convId, pId, 'active']
-        );
+      if (existing.rows.length > 0) {
+        return res.status(200).json({ success: true, data: { id: existing.rows[0].id } });
       }
     }
-  }
 
-  res.status(201).json({ success: true, data: { id: convId } });
+    const convId = uuidv4();
+    await query(
+      'INSERT INTO conversations (id, type, title, created_at, updated_at) VALUES ($1, $2, $3, NOW(), NOW())',
+      [convId, type, title || null]
+    );
+
+    // Add current user as active
+    await query(
+      'INSERT INTO conversation_participants (conversation_id, user_id, status) VALUES ($1, $2, $3)',
+      [convId, userId, 'active']
+    );
+
+    // Add target user as 'request' if it's a new direct chat, otherwise 'active' for group
+    const targetStatus = type === 'direct' ? 'request' : 'active';
+    if (targetUserId) {
+      await query(
+        'INSERT INTO conversation_participants (conversation_id, user_id, status) VALUES ($1, $2, $3)',
+        [convId, targetUserId, targetStatus]
+      );
+    } else if (req.body.participantIds && Array.isArray(req.body.participantIds)) {
+      // For groups
+      for (const pId of req.body.participantIds) {
+        if (pId !== userId) {
+          await query(
+            'INSERT INTO conversation_participants (conversation_id, user_id, status) VALUES ($1, $2, $3)',
+            [convId, pId, 'active']
+          );
+        }
+      }
+    }
+
+    res.status(201).json({ success: true, data: { id: convId } });
+  } catch (error: any) {
+    console.error('CRITICAL ERROR in startConversation:', error);
+    res.status(500).json({ success: false, error: error.message, stack: error.stack });
+  }
 });
 
 // ─── POST /api/chat/message ────────────────────────────────────────────────
