@@ -23,6 +23,7 @@ import { initDb } from './config/initDb';
 
 const app: Express = express();
 
+// Список разрешенных адресов (добавь сюда свой домен Vercel, если он изменится)
 const allowedOrigins = [
   'https://mamapro-7inj.vercel.app',
   'http://localhost:3000',
@@ -31,14 +32,19 @@ const allowedOrigins = [
 ];
 
 app.use(cors({
-  origin: function (origin, callback) {
+  // Явно указываем типы для origin и callback, чтобы пройти проверку TypeScript
+  origin: function (
+    origin: string | undefined,
+    callback: (err: Error | null, allow?: boolean) => void
+  ) {
     // Разрешаем запросы без origin (например, мобильные приложения или curl)
     if (!origin) return callback(null, true);
-    
+
+    // Проверяем, есть ли адрес в списке разрешенных или является ли он localhost
     if (allowedOrigins.indexOf(origin) !== -1 || origin.includes('localhost')) {
       callback(null, true);
     } else {
-      console.log('CORS Blocked for origin:', origin);
+      console.log('🛑 CORS Blocked for origin:', origin);
       callback(new Error('Not allowed by CORS'));
     }
   },
@@ -67,7 +73,12 @@ app.use('/api/posts', postRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
-  res.json({ success: true, message: 'MamaPro Server is running 🌸', version: '2.0.0', env: config.env });
+  res.json({
+    success: true,
+    message: 'MamaPro Server is running 🌸',
+    version: '2.0.0',
+    env: config.env
+  });
 });
 
 // Error handling
@@ -76,10 +87,16 @@ app.use(errorHandler);
 // Start server
 const port = config.port;
 app.listen(port, '0.0.0.0', async () => {
-  await initDb();
-  console.log(`🚀 MamaPro Server running on port ${port}`);
-  console.log(`🌱 Environment: ${config.env}`);
-  console.log(`📡 CORS Origins: ${config.corsOrigin.join(', ')}`);
+  try {
+    // Инициализация базы данных (создание таблиц)
+    await initDb();
+    console.log(`🚀 MamaPro Server running on port ${port}`);
+    console.log(`🌱 Environment: ${config.env}`);
+    // Выводим список разрешенных CORS из конфига для проверки
+    console.log(`📡 CORS Origins configured: ${config.corsOrigin.join(', ')}`);
+  } catch (error) {
+    console.error('❌ Failed to initialize database:', error);
+  }
 });
 
 export default app;
