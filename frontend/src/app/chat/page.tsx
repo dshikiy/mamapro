@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { 
   Search, 
@@ -39,7 +39,7 @@ type Conversation = {
   };
 };
 
-export default function ChatPage() {
+function ChatContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user, isAuthenticated } = useAuthStore();
@@ -509,5 +509,17 @@ export default function ChatPage() {
         </div>
       </Modal>
     </div>
+  );
+}
+
+export default function ChatPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex h-screen items-center justify-center bg-[#FDFBF9]">
+        <div className="w-8 h-8 border-3 border-sage border-t-transparent rounded-full animate-spin opacity-50" />
+      </div>
+    }>
+      <ChatContent />
+    </Suspense>
   );
 }
