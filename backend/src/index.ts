@@ -23,11 +23,27 @@ import { initDb } from './config/initDb';
 
 const app: Express = express();
 
-// Middleware
-app.use(cors({ 
-  origin: config.corsOrigin,
+const allowedOrigins = [
+  'https://mamapro-7inj.vercel.app',
+  'http://localhost:3000',
+  'http://localhost:3001',
+  'http://localhost:3002'
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // Разрешаем запросы без origin (например, мобильные приложения или curl)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1 || origin.includes('localhost')) {
+      callback(null, true);
+    } else {
+      console.log('CORS Blocked for origin:', origin);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
