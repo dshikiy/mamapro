@@ -2,7 +2,7 @@ export type User = {
   id: string;
   email: string;
   name: string;
-  role: 'user' | 'specialist' | 'admin';
+  role: 'mother' | 'specialist' | 'admin';
   avatar?: string;
   bio?: string;
   subscription: 'free' | 'basic' | 'pro';
@@ -11,6 +11,7 @@ export type User = {
 
 export type Specialist = {
   id: string;
+  user_id?: string;
   name: string;
   title: string;
   bio: string;
@@ -21,6 +22,12 @@ export type Specialist = {
   availability: {
     day: string;
     slots: string[];
+  }[];
+  slots?: {
+    id: string;
+    slot_date: string;
+    slot_time: string;
+    is_booked: boolean;
   }[];
 };
 
@@ -39,11 +46,13 @@ export type Course = {
   id: string;
   title: string;
   description: string;
-  category: 'parenting' | 'psychology' | 'postpartum' | 'stress' | 'relationships';
+  category: string;
   lessons: Lesson[];
   instructor: string;
   image: string;
-  duration: number; // in minutes
+  duration: number;
+  is_pro: boolean;
+  completedLessonIds?: string[];
 };
 
 export type Lesson = {
@@ -53,6 +62,7 @@ export type Lesson = {
   youtubeUrl: string;
   duration: number;
   order: number;
+  completed?: boolean;
 };
 
 export type DailyTask = {
@@ -73,7 +83,17 @@ export type Listing = {
   category: string;
   image: string;
   price?: number;
+  contact_info?: string;
   status: 'active' | 'sold' | 'removed';
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type DiaryEntry = {
+  id: string;
+  userId: string;
+  text: string;
+  mood?: string;
   createdAt: string;
 };
 

@@ -15,13 +15,15 @@
 
     "moduleResolution": "node",
     "types": ["node"],
+    "typeRoots": ["./src/types", "./node_modules/@types"],
 
     "baseUrl": "./src",
     "paths": {
       "@/*": ["*"]
     },
 
-    "sourceMap": true
+    "sourceMap": true,
+     
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist"]

@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { X } from 'lucide-react';
 
 interface ModalProps {
@@ -11,21 +11,52 @@ interface ModalProps {
 }
 
 export default function Modal({ isOpen, onClose, title, children }: ModalProps) {
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fade-in">
-      <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden relative animate-slide-in">
-        <button 
-          onClick={onClose} 
-          className="absolute top-4 right-4 h-8 w-8 bg-cream rounded-full flex items-center justify-center text-warm-gray hover:text-dark-text hover:bg-beige transition z-10"
-        >
-          <X size={18} />
-        </button>
-        <div className="p-6 border-b border-cream">
-          <h2 className="text-xl font-bold text-dark-text pr-8">{title}</h2>
+    <div
+      className="fixed inset-0 z-[100] flex items-end justify-center"
+      style={{ maxWidth: '448px', margin: '0 auto', left: 0, right: 0 }}
+    >
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-dark-text/30 backdrop-blur-sm"
+        onClick={onClose}
+      />
+
+      {/* Sheet */}
+      <div
+        className="relative w-full rounded-t-[2rem] bg-white shadow-elevated animate-slide-up overflow-hidden"
+        style={{ maxHeight: '90vh' }}
+      >
+        {/* Handle */}
+        <div className="flex justify-center pt-3 pb-1">
+          <div className="w-10 h-1 rounded-full bg-beige" />
         </div>
-        <div className="p-6 max-h-[70vh] overflow-y-auto">
+
+        {/* Header */}
+        <div className="flex items-center justify-between px-5 py-3 border-b border-beige">
+          <h2 className="text-base font-black text-dark-text">{title}</h2>
+          <button
+            onClick={onClose}
+            className="w-8 h-8 rounded-xl bg-cream flex items-center justify-center hover:bg-beige transition"
+          >
+            <X size={16} className="text-dark-text" />
+          </button>
+        </div>
+
+        {/* Content */}
+        <div className="px-5 py-5 overflow-y-auto" style={{ maxHeight: 'calc(90vh - 80px)' }}>
           {children}
         </div>
       </div>

@@ -1,118 +1,136 @@
-// User
+export type UserRole = 'mother' | 'specialist' | 'admin';
+
 export interface User {
   id: string;
   email: string;
   name: string;
   password: string;
-  role: 'user' | 'specialist' | 'admin';
+  role: UserRole;
   avatar?: string;
   bio?: string;
   subscription: 'free' | 'basic' | 'pro';
-  createdAt: Date;
-  updatedAt: Date;
+  created_at: Date;
+  updated_at: Date;
 }
 
-export interface CreateUserRequest {
-  email: string;
-  name: string;
-  password: string;
-}
-
-// Specialist
 export interface Specialist {
   id: string;
-  userId: string;
+  user_id: string;
   name: string;
   title: string;
-  bio: string;
-  avatar: string;
+  bio?: string;
+  avatar?: string;
   specialty: string;
   rating: number;
   price: number;
-  availability: AvailabilitySlot[];
-  createdAt: Date;
+  availability?: any;
+  created_at: Date;
 }
 
-export interface AvailabilitySlot {
-  day: string;
-  slots: string[];
+export interface TimeSlot {
+  id: string;
+  specialist_id: string;
+  slot_date: string;
+  slot_time: string;
+  is_booked: boolean;
+  created_at: Date;
 }
 
-// Appointment
 export interface Appointment {
   id: string;
-  userId: string;
-  specialistId: string;
-  dateTime: Date;
+  user_id: string;
+  specialist_id: string;
+  date_time: Date;
   duration: number;
   status: 'scheduled' | 'completed' | 'cancelled';
   notes?: string;
-  createdAt: Date;
+  time_slot_id?: string;
+  meeting_link?: string;
+  price?: number;
+  payment_id?: string;
+  created_at: Date;
 }
 
-// Course
+export interface Marathon {
+  id: string;
+  title: string;
+  description?: string;
+  duration_days: number;
+  price: number;
+  image?: string;
+  instructor_id?: string;
+  is_active: boolean;
+  created_at: Date;
+}
+
+export interface MarathonEnrollment {
+  id: string;
+  user_id: string;
+  marathon_id: string;
+  started_at: Date;
+  current_day: number;
+  completed: boolean;
+}
+
+export interface Listing {
+  id: string;
+  user_id: string;
+  title: string;
+  description?: string;
+  category?: string;
+  image?: string;
+  price?: number;
+  status: 'active' | 'sold' | 'removed';
+  contact_info?: string;
+  city?: string;
+  created_at: Date;
+  updated_at: Date;
+}
+
+export interface Subscription {
+  id: string;
+  user_id: string;
+  plan: 'basic' | 'pro';
+  start_date: Date;
+  end_date: Date;
+  active: boolean;
+  appointments_used: number;
+  appointments_limit?: number; // null = unlimited
+}
+
+export interface Payment {
+  id: string;
+  user_id: string;
+  amount: number;
+  type: 'subscription' | 'appointment' | 'marathon' | 'marketplace_listing';
+  reference_id?: string;
+  status: 'pending' | 'completed' | 'failed' | 'refunded';
+  description?: string;
+  created_at: Date;
+}
+
+export interface DiaryEntry {
+  id: string;
+  user_id: string;
+  text: string;
+  mood?: string;
+  created_at: Date;
+}
+
 export interface Course {
   id: string;
   title: string;
-  description: string;
-  category: 'parenting' | 'psychology' | 'postpartum' | 'stress' | 'relationships';
-  lessons: Lesson[];
-  instructor: string;
-  image: string;
-  duration: number;
-  createdAt: Date;
-}
-
-export interface Lesson {
-  id: string;
-  courseId: string;
-  title: string;
-  description: string;
-  youtubeUrl: string;
-  duration: number;
-  order: number;
-}
-
-// Daily Task
-export interface DailyTask {
-  id: string;
-  userId: string;
-  title: string;
-  description: string;
-  completed: boolean;
-  completedAt?: Date;
-  dueDate: Date;
-  createdAt: Date;
-}
-
-// Marketplace Listing
-export interface Listing {
-  id: string;
-  userId: string;
-  title: string;
-  description: string;
+  description?: string;
   category: string;
-  image: string;
-  price?: number;
-  status: 'active' | 'sold' | 'removed';
-  createdAt: Date;
-  updatedAt: Date;
+  instructor?: string;
+  image?: string;
+  duration?: number;
+  created_at: Date;
 }
 
-// Subscription
-export interface Subscription {
-  id: string;
+export interface JwtPayload {
   userId: string;
-  plan: 'free' | 'basic' | 'pro';
-  startDate: Date;
-  endDate: Date;
-  active: boolean;
-}
-
-// API Response
-export interface ApiResponse<T> {
-  success: boolean;
-  data?: T;
-  error?: string;
-  message?: string;
+  role: string;
+  iat?: number;
+  exp?: number;
 }

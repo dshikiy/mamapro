@@ -17,15 +17,15 @@
     "express-validator": "^7.0.0",
     "jsonwebtoken": "^9.0.0",
     "pg": "^8.10.0",
-    "uuid": "^9.0.1"
+    "uuid": "^14.0.0"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.2",
+    "@types/cors": "^2.8.19",
     "@types/express": "^4.17.25",
     "@types/jsonwebtoken": "^9.0.2",
     "@types/node": "^20.19.39",
     "@types/pg": "^8.10.0",
-    "@types/uuid": "^11.0.0",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.9.3"

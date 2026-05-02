@@ -65,12 +65,15 @@ export const SpecialistCard: React.FC<SpecialistCardProps> = ({ specialist, onBo
         <div className="flex space-x-2 pt-2 border-t border-beige">
           <Button variant="primary" size="sm" className="flex-1" onClick={onBook}>
             <Video size={16} />
-            <span>Book</span>
+            <span>Записаться</span>
           </Button>
-          <Button variant="outline" size="sm" className="flex-1">
+          <Link 
+            href={`/chat?with=${specialist.user_id}`}
+            className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 text-sm font-semibold text-dark-text border border-beige rounded-lg hover:bg-beige transition"
+          >
             <MessageCircle size={16} />
-            <span>Chat</span>
-          </Button>
+            <span>Чат</span>
+          </Link>
         </div>
       </div>
     </div>

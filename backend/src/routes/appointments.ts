@@ -1,44 +1,14 @@
-import { Router, Request, Response } from "express";
+import express from 'express';
+import * as appointmentController from '../controllers/appointmentController';
+import { authMiddleware } from '../middleware/auth';
 
-const router = Router();
+const router = express.Router();
 
-router.get("/", (req: Request, res: Response) => {
-  // Данные, которые соответствуют твоему типу Appointment[]
-  const mockAppointments = [
-    {
-      id: "1",
-      userId: "user-123",
-      specialistId: "spec-456",
-      specialist: {
-        id: "spec-456",
-        name: "Dr. Anna Smith",
-        title: "Psychologist",
-        bio: "Expert in postpartum recovery",
-        avatar: "https://i.pravatar.cc/150?u=anna",
-        specialty: "Psychology",
-        rating: 4.9,
-        price: 5000,
-        availability: []
-      },
-      dateTime: new Date().toISOString(),
-      duration: 60,
-      status: 'scheduled',
-      notes: "First session"
-    }
-  ];
-
-  // Ответ, который соответствует твоему типу ApiResponse
-  res.json({
-    success: true,
-    data: mockAppointments // Помещаем данные в поле data
-  });
-});
-
-router.post("/", (req: Request, res: Response) => {
-  res.status(201).json({
-    success: true,
-    message: "Appointment created"
-  });
-});
+// All appointment routes require authentication
+router.get('/', authMiddleware, appointmentController.getAppointments);
+router.get('/specialist', authMiddleware, appointmentController.getSpecialistAppointments);
+router.post('/', authMiddleware, appointmentController.createAppointment);
+router.delete('/:id', authMiddleware, appointmentController.cancelAppointment);
+router.get('/slots/:specialistId', appointmentController.getAvailableSlots);
 
 export default router;

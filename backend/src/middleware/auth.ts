@@ -38,6 +38,48 @@ export const authMiddleware = (
   }
 };
 
+export const isAdmin = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  if (!req.user || req.user.role !== 'admin') {
+    return res.status(403).json({
+      success: false,
+      error: 'Access denied. Admins only.',
+    });
+  }
+  next();
+};
+
+export const isSpecialist = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  if (!req.user || req.user.role !== 'specialist') {
+    return res.status(403).json({
+      success: false,
+      error: 'Access denied. Specialists only.',
+    });
+  }
+  next();
+};
+
+export const isAdminOrSpecialist = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  if (!req.user || (req.user.role !== 'admin' && req.user.role !== 'specialist')) {
+    return res.status(403).json({
+      success: false,
+      error: 'Access denied.',
+    });
+  }
+  next();
+};
+
 export const optionalAuth = (
   req: Request,
   res: Response,

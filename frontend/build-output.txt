@@ -1,0 +1,22 @@
+
+> mampro-frontend@1.0.0 build
+> next build
+
+  ▲ Next.js 14.2.35
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully
+   Linting and checking validity of types ...
+Failed to compile.
+
+./src/app/community/page.tsx:4:68
+Type error: 'Heart' is declared but its value is never read.
+
+[0m [90m 2 |[39m[0m
+[0m [90m 3 |[39m [36mimport[39m [33mReact[39m[33m,[39m { useState[33m,[39m useEffect } [36mfrom[39m [32m'react'[39m[33m;[39m[0m
+[0m[31m[1m>[22m[39m[90m 4 |[39m [36mimport[39m { [33mMessageCircle[39m[33m,[39m [33mShoppingBag[39m[33m,[39m [33mEyeOff[39m[33m,[39m [33mMapPin[39m[33m,[39m [33mSearch[39m[33m,[39m [33mPlus[39m[33m,[39m [33mHeart[39m[33m,[39m [33mCheckCircle2[39m } [36mfrom[39m [32m'lucide-react'[39m[33m;[39m[0m
+[0m [90m   |[39m                                                                    [31m[1m^[22m[39m[0m
+[0m [90m 5 |[39m [36mimport[39m [33mModal[39m [36mfrom[39m [32m'@/components/ui/Modal'[39m[33m;[39m[0m
+[0m [90m 6 |[39m[0m
+[0m [90m 7 |[39m [36mexport[39m [36mdefault[39m [36mfunction[39m [33mCommunityPage[39m() {[0m
+Next.js build worker exited with code: 1 and signal: null

@@ -49,7 +49,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
       });
 
       if (response.data.success) {
-        login(response.data.user, response.data.token);
+        login(response.data.data.user, response.data.data.token);
         if (onSuccess) onSuccess();
         else router.push('/dashboard');
       }

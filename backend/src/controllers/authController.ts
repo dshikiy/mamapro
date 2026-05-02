@@ -91,3 +91,21 @@ export const getProfile = asyncHandler(async (req: Request, res: Response) => {
     },
   });
 });
+
+export const getPublicProfile = asyncHandler(async (req: Request, res: Response) => {
+  const { userId } = req.params;
+  const user = await findUserById(userId);
+  if (!user) {
+    throw new AppError(404, 'User not found');
+  }
+
+  res.status(200).json({
+    success: true,
+    data: {
+      id: user.id,
+      name: user.name,
+      role: user.role,
+      avatar: user.avatar,
+    },
+  });
+});

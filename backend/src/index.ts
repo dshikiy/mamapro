@@ -9,16 +9,30 @@ import appointmentsRoutes from './routes/appointments';
 import coursesRoutes from './routes/courses';
 import tasksRoutes from './routes/tasks';
 import marketplaceRoutes from './routes/marketplace';
+import marathonsRoutes from './routes/marathons';
+import profileRoutes from './routes/profile';
+import adminRoutes from './routes/admin';
+import chatRoutes from './routes/chat';
+import subscriptionRoutes from './routes/subscription';
+import contentRoutes from './routes/content';
+import postRoutes from './routes/posts';
 
 // Middleware
 import { errorHandler } from './middleware/errorHandler';
+import { initDb } from './config/initDb';
 
 const app: Express = express();
 
 // Middleware
-app.use(cors({ origin: config.corsOrigin }));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(cors({ 
+  origin: config.corsOrigin,
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // API Routes
 app.use('/api/auth', authRoutes);
@@ -27,19 +41,29 @@ app.use('/api/appointments', appointmentsRoutes);
 app.use('/api/courses', coursesRoutes);
 app.use('/api/tasks', tasksRoutes);
 app.use('/api/marketplace', marketplaceRoutes);
+app.use('/api/marathons', marathonsRoutes);
+app.use('/api/profile', profileRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/chat', chatRoutes);
+app.use('/api/subscription', subscriptionRoutes);
+app.use('/api/content', contentRoutes);
+app.use('/api/posts', postRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
-  res.json({ success: true, message: 'Server is running' });
+  res.json({ success: true, message: 'MamaPro Server is running 🌸', version: '2.0.0', env: config.env });
 });
 
 // Error handling
 app.use(errorHandler);
 
 // Start server
-app.listen(config.port, () => {
-  console.log(`🚀 Server running on port ${config.port}`);
-  console.log(`Environment: ${config.env}`);
+const port = config.port;
+app.listen(port, '0.0.0.0', async () => {
+  await initDb();
+  console.log(`🚀 MamaPro Server running on port ${port}`);
+  console.log(`🌱 Environment: ${config.env}`);
+  console.log(`📡 CORS Origins: ${config.corsOrigin.join(', ')}`);
 });
 
 export default app;

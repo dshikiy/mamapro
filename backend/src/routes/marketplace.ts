@@ -10,4 +10,6 @@ router.get('/:id', optionalAuth, marketplaceController.getListingById);
 router.put('/:id', authMiddleware, marketplaceController.updateListing);
 router.delete('/:id', authMiddleware, marketplaceController.deleteListing);
 
+router.post('/:id/like', authMiddleware, marketplaceController.toggleLike);
+
 export default router;

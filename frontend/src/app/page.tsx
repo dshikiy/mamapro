@@ -2,199 +2,231 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { PlayCircle, Calendar, MessageSquare, BookOpen, ArrowRight, Heart, CheckCircle2 } from 'lucide-react';
-import Modal from '@/components/ui/Modal';
+import { useRouter } from 'next/navigation';
+import { Calendar, PlayCircle, Star, ChevronRight, BookOpen, MessageCircle, Users } from 'lucide-react';
+import { useAuthStore } from '@/store/authStore';
+import api from '@/lib/api';
+
+const MOODS = [
+  { emoji: '😴', label: 'Устала' },
+  { emoji: '😐', label: 'Нормально' },
+  { emoji: '🙂', label: 'Хорошо' },
+  { emoji: '😊', label: 'Отлично' },
+  { emoji: '✨', label: 'Супер!' },
+];
+
+const CATEGORIES = [
+  { label: 'Психолог', color: 'bg-rose-light text-rose-dark', href: '/care?cat=Психолог' },
+  { label: 'ГВ', color: 'bg-sage-light text-sage-dark', href: '/care?cat=ГВ' },
+  { label: 'Педиатр', color: 'bg-[#E8E6F0] text-[#9E96C0]', href: '/care?cat=Педиатр' },
+  { label: 'Сон', color: 'bg-beige text-warm-gray', href: '/care?cat=Сон' },
+];
+
+const SPECIALISTS = [
+  { name: 'Асель Нургалиева', title: 'Перинатальный психолог', rating: 4.9, img: 'https://i.pravatar.cc/150?img=32' },
+  { name: 'Мадина Касымова', title: 'Консультант по ГВ', rating: 5.0, img: 'https://i.pravatar.cc/150?img=43' },
+  { name: 'Тимур Омаров', title: 'Педиатр', rating: 4.8, img: 'https://i.pravatar.cc/150?img=11' },
+];
+
+const COURSES = [
+  { title: 'Послеродовое восстановление', author: 'Асель Н.', time: '42 мин', img: 'https://images.unsplash.com/photo-1544126592-807ade215a0b?auto=format&fit=crop&w=400&q=80' },
+  { title: 'Основы ГВ', author: 'Мадина К.', time: '1 час', img: 'https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?auto=format&fit=crop&w=400&q=80' },
+];
 
 export default function Home() {
-  const [toastMessage, setToastMessage] = useState('');
   const [activeMood, setActiveMood] = useState<number | null>(null);
-  const [isLessonModalOpen, setIsLessonModalOpen] = useState(false);
-  const [isDiaryModalOpen, setIsDiaryModalOpen] = useState(false);
-  const [diaryText, setDiaryText] = useState('');
+  const router = useRouter();
+  const { user, isAuthenticated } = useAuthStore();
+  const [mounted, setMounted] = useState(false);
 
-  // Auto-hide toast after 3 seconds
+  const [latestSpecialists, setLatestSpecialists] = useState<any[]>([]);
+  const [latestCourses, setLatestCourses] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    if (toastMessage) {
-      const timer = setTimeout(() => setToastMessage(''), 3000);
-      return () => clearTimeout(timer);
+    setMounted(true);
+    loadHomeData();
+  }, []);
+
+  const loadHomeData = async () => {
+    try {
+      const [specRes, courseRes] = await Promise.all([
+        api.get('/specialists'),
+        api.get('/courses')
+      ]);
+      setLatestSpecialists(specRes.data.data.slice(0, 3));
+      setLatestCourses(courseRes.data.data.slice(0, 2));
+    } catch (error) {
+      console.error('Error loading home data:', error);
+    } finally {
+      setLoading(false);
     }
-  }, [toastMessage]);
-
-  const handleMoodSelect = (idx: number, label: string) => {
-    setActiveMood(idx);
-    setToastMessage(`Настроение "${label}" сохранено в дневник!`);
   };
 
-  const handleSaveDiary = () => {
-    if (!diaryText.trim()) return;
-    setDiaryText('');
-    setIsDiaryModalOpen(false);
-    setToastMessage('Запись успешно добавлена в дневник!');
-  };
+  if (mounted && !isAuthenticated) {
+    router.push('/login');
+    return null;
+  }
+
+  if (!mounted) return null;
 
   return (
-    <div className="flex flex-col min-h-screen bg-transparent p-4 pb-32 animate-fade-in relative">
-      
-      {/* Toast Notification */}
-      {toastMessage && (
-        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[200] bg-dark-text text-white px-5 py-3 rounded-full shadow-2xl flex items-center gap-2 animate-slide-in whitespace-nowrap text-sm font-bold">
-          <CheckCircle2 size={18} className="text-sage" />
-          {toastMessage}
-        </div>
-      )}
+    <div className="min-h-screen pb-32">
+      {/* ── Hero Section ── */}
+      <section className="px-4 pt-6 pb-6">
+        <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#DBC2BA] to-[#F0E6E4] p-6 shadow-card">
+          <div className="relative z-10 w-2/3">
+            <div className="flex items-center gap-2 mb-1">
+              <p className="text-sm text-white/90 font-medium">С возвращением,</p>
+              {user?.subscription === 'pro' && (
+                <span className="bg-white/30 backdrop-blur-md text-white text-[9px] px-2 py-0.5 rounded-full font-black uppercase tracking-widest border border-white/20">
+                  Pro ✨
+                </span>
+              )}
+            </div>
+            <h1 className="text-2xl font-black text-white leading-tight mb-4">
+              {user?.name || 'Мама'}! 🌸
+            </h1>
+            <div className="flex flex-wrap gap-2">
+              <Link
+                href="/care"
+                className="inline-block bg-white/20 backdrop-blur-md text-white font-bold px-4 py-2 rounded-xl text-sm border border-white/40 hover:bg-white/30 transition shadow-sm"
+              >
+                Записаться к врачу
+              </Link>
+              {user?.role === 'admin' && (
+                <Link
+                  href="/admin"
+                  className="inline-flex items-center gap-2 bg-dark-text text-white font-bold px-4 py-2 rounded-xl text-sm hover:bg-black transition shadow-warm"
+                >
+                  <Calendar size={14} /> Админка
+                </Link>
+              )}
+              {user?.role === 'specialist' && (
+                <Link
+                  href="/specialist"
+                  className="inline-flex items-center gap-2 bg-accent-pink text-white font-bold px-4 py-2 rounded-xl text-sm hover:bg-accent-purple transition shadow-warm"
+                >
+                  <Users size={14} /> Мой кабинет
+                </Link>
+              )}
+            </div>
+          </div>
 
-      {/* Header Profile Area */}
-      <header className="flex justify-between items-center py-6 mt-2">
-        <div>
-          <h1 className="text-2xl font-medium text-dark-text tracking-tight">Доброе утро,</h1>
-          <p className="text-3xl font-bold text-accent-pink tracking-tight">Айгерим 🌸</p>
-        </div>
-        <Link href="/profile" className="h-12 w-12 rounded-full bg-soft-pink border-2 border-white shadow-soft flex items-center justify-center overflow-hidden cursor-pointer hover:scale-105 transition-transform">
-          <img src="https://i.pravatar.cc/150?img=5" alt="Profile" className="h-full w-full object-cover" />
-        </Link>
-      </header>
-
-      {/* Daily Emotion/Tracker Card */}
-      <section className="bg-white/80 rounded-3xl p-5 shadow-softer border border-white backdrop-blur-md mb-6">
-        <h2 className="text-sm font-semibold text-warm-gray mb-4 uppercase tracking-wider text-center">Как вы сегодня себя чувствуете?</h2>
-        <div className="flex justify-between">
-          {[
-            { emoji: '😴', label: 'Устала' },
-            { emoji: '😐', label: 'Нормально' },
-            { emoji: '🙂', label: 'Хорошо' },
-            { emoji: '😊', label: 'Отлично' },
-            { emoji: '✨', label: 'Супер' }
-          ].map((mood, i) => (
-            <button 
-              key={i} 
-              onClick={() => handleMoodSelect(i, mood.label)}
-              className="flex flex-col items-center gap-2 group transition-transform hover:-translate-y-1"
-            >
-              <div className={`h-12 w-12 rounded-full flex items-center justify-center text-xl border-2 transition-all shadow-sm ${
-                activeMood === i 
-                  ? 'bg-sage border-sage scale-110' 
-                  : 'bg-cream border-transparent group-hover:border-sage group-hover:bg-sage/20'
-              }`}>
-                {mood.emoji}
-              </div>
-              <span className={`text-[10px] font-medium transition-colors ${activeMood === i ? 'text-sage font-bold' : 'text-warm-gray'}`}>
-                {mood.label}
-              </span>
-            </button>
-          ))}
+          <img
+            src="https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&fit=crop&w=600&q=80"
+            alt="Mom and baby"
+            className="absolute top-0 right-0 h-full w-1/2 object-cover object-left mask-image-linear-left"
+            style={{ maskImage: 'linear-gradient(to right, transparent, black 40%)', WebkitMaskImage: 'linear-gradient(to right, transparent, black 40%)' }}
+          />
         </div>
       </section>
 
-      {/* Today's Focus (Marathon) */}
-      <section className="mb-8">
-        <div className="flex justify-between items-end mb-4">
-          <h2 className="text-xl font-bold text-dark-text">Фокус дня</h2>
-          <Link href="/learn" className="text-sm font-medium text-accent-purple hover:opacity-80">Все курсы</Link>
-        </div>
-        
-        <div className="relative rounded-[2rem] overflow-hidden bg-gradient-to-br from-accent-pink to-accent-purple p-[2px] shadow-warm">
-          <div className="absolute top-0 right-0 p-4 opacity-20">
-             <Heart size={80} className="fill-white" />
+      <div className="px-4 space-y-8">
+        {/* ── Mood Tracker ── */}
+        <section className="bg-white rounded-[2rem] p-5 shadow-card border border-beige">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-base font-black text-dark-text flex items-center gap-2">
+              <Calendar size={18} className="text-sage-dark" />
+              Календарь
+            </h2>
           </div>
-          <div className="bg-white/95 backdrop-blur-xl rounded-[30px] p-6 relative z-10">
-            <div className="flex items-start justify-between mb-3">
-              <span className="bg-accent-pink/15 text-accent-pink text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">День 3 из 7</span>
-            </div>
-            <h3 className="text-2xl font-bold text-dark-text mb-1 leading-tight">Материнство<br />без стресса</h3>
-            <p className="text-sm text-warm-gray mb-6">Сегодня: Как справляться с недосыпом</p>
-            
-            <button 
-              onClick={() => setIsLessonModalOpen(true)}
-              className="w-full bg-dark-text text-white rounded-2xl py-4 px-4 flex items-center justify-center gap-2 font-medium hover:bg-black transition-colors shadow-soft"
-            >
-              <PlayCircle size={20} className="text-accent-pink" />
-              Начать урок
-            </button>
+          <div className="flex justify-around">
+            {MOODS.map((mood, i) => (
+              <button
+                key={i}
+                onClick={() => setActiveMood(i)}
+                className="flex flex-col items-center gap-1.5 group"
+              >
+                <div className={`w-12 h-12 rounded-full flex items-center justify-center text-xl border-2 transition-all shadow-sm ${activeMood === i
+                  ? 'bg-sage border-sage scale-110 shadow-warm'
+                  : 'bg-cream border-transparent group-hover:border-sage group-hover:bg-sage-light/40'
+                  }`}>
+                  {mood.emoji}
+                </div>
+                <span className={`text-[9px] font-bold transition-colors ${activeMood === i ? 'text-sage-dark' : 'text-warm-gray'}`}>
+                  {mood.label}
+                </span>
+              </button>
+            ))}
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Upcoming Reminders */}
-      <section className="mb-8">
-        <h2 className="text-xl font-bold text-dark-text mb-4">Предстоящее</h2>
-        <Link href="/care" className="block bg-white rounded-[2rem] p-4 shadow-softer border border-white flex items-center gap-4 hover:bg-cream/50 transition">
-          <div className="h-16 w-16 rounded-2xl bg-lavender/30 flex flex-col items-center justify-center text-accent-purple shadow-inner">
-            <span className="text-xs font-bold uppercase">Окт</span>
-            <span className="text-xl font-black">24</span>
+        {/* ── Categories ── */}
+        <section>
+          <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
+            {CATEGORIES.map(cat => (
+              <Link
+                key={cat.label}
+                href={cat.href}
+                className={`flex-shrink-0 px-5 py-2.5 rounded-xl text-sm font-bold shadow-sm ${cat.color}`}
+              >
+                {cat.label}
+              </Link>
+            ))}
           </div>
-          <div className="flex-1">
-            <h4 className="font-bold text-dark-text">Сессия с доктором Асель</h4>
-            <p className="text-sm text-warm-gray mt-1">14:00 • Видеозвонок</p>
+        </section>
+
+        {/* ── Specialists ── */}
+        <section>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-lg font-black text-dark-text">Наши специалисты</h2>
+            <Link href="/care" className="text-sm font-bold text-sage-dark hover:opacity-80 flex items-center">
+              Все <ChevronRight size={16} />
+            </Link>
           </div>
-          <div className="h-12 w-12 rounded-full bg-cream flex items-center justify-center text-dark-text hover:bg-sage/50 transition mr-1">
-            <ArrowRight size={20} className="text-warm-gray" />
+          <div className="flex gap-4 overflow-x-auto pb-2 no-scrollbar -mx-1 px-1">
+            {loading ? (
+              [1, 2, 3].map(i => <div key={i} className="flex-shrink-0 w-[140px] h-40 bg-cream animate-pulse rounded-3xl" />)
+            ) : (
+              latestSpecialists.map((sp, i) => (
+                <Link key={i} href="/care" className="flex-shrink-0 w-[140px] bg-white rounded-3xl p-4 shadow-card border border-beige text-center group hover:shadow-elevated transition">
+                  <img src={sp.avatar || 'https://i.pravatar.cc/150'} alt={sp.name} className="w-16 h-16 rounded-full mx-auto mb-3 object-cover shadow-soft group-hover:scale-105 transition-transform" />
+                  <h4 className="font-bold text-dark-text text-sm leading-tight mb-1 truncate">{sp.name}</h4>
+                  <p className="text-[10px] text-warm-gray mb-2">{sp.title}</p>
+                  <div className="flex items-center justify-center gap-1 bg-cream rounded-lg py-1">
+                    <Star size={10} className="fill-amber-400 text-amber-400" />
+                    <span className="text-[10px] font-bold text-dark-text">{sp.rating}</span>
+                  </div>
+                </Link>
+              ))
+            )}
           </div>
-        </Link>
-      </section>
+        </section>
 
-      {/* Quick Actions Grid */}
-      <section>
-        <h2 className="text-xl font-bold text-dark-text mb-4">Быстрые действия</h2>
-        <div className="grid grid-cols-2 gap-4">
-          <button 
-            onClick={() => setIsDiaryModalOpen(true)}
-            className="text-left bg-gradient-to-br from-soft-pink/40 to-white p-5 rounded-[2rem] shadow-softer border border-white flex flex-col items-start gap-4 active:scale-95 transition-transform group"
-          >
-            <div className="h-10 w-10 rounded-full bg-white flex items-center justify-center text-accent-pink shadow-sm group-hover:scale-110 transition-transform">
-              <BookOpen size={20} />
-            </div>
-            <div>
-              <span className="text-sm font-bold text-dark-text block">Мой дневник</span>
-              <span className="text-xs text-warm-gray">Записать мысли</span>
-            </div>
-          </button>
-          
-          <Link href="/community" className="bg-gradient-to-br from-sage/40 to-white p-5 rounded-[2rem] shadow-softer border border-white flex flex-col items-start gap-4 active:scale-95 transition-transform group">
-            <div className="h-10 w-10 rounded-full bg-white flex items-center justify-center text-sage shadow-sm group-hover:scale-110 transition-transform">
-              <MessageSquare size={20} />
-            </div>
-            <div>
-              <span className="text-sm font-bold text-dark-text block">Анонимно</span>
-              <span className="text-xs text-warm-gray">Задать вопрос</span>
-            </div>
-          </Link>
-        </div>
-      </section>
-
-      {/* MODALS */}
-      <Modal isOpen={isLessonModalOpen} onClose={() => setIsLessonModalOpen(false)} title="Урок 3: Сон малыша">
-        <div className="aspect-video bg-black rounded-2xl overflow-hidden mb-4 relative flex items-center justify-center group cursor-pointer">
-          <img src="https://images.unsplash.com/photo-1544126592-807ade215a0b?auto=format&fit=crop&w=800&q=80" alt="Video cover" className="w-full h-full object-cover opacity-60" />
-          <PlayCircle size={64} className="text-white absolute group-hover:scale-110 transition-transform" />
-        </div>
-        <p className="text-sm text-warm-gray mb-4">В этом уроке мы разберем основные причины, почему малыш часто просыпается ночью, и научимся выстраивать мягкие ритуалы укладывания.</p>
-        <button 
-          onClick={() => {
-            setIsLessonModalOpen(false);
-            setToastMessage('Урок отмечен как пройденный!');
-          }}
-          className="w-full bg-accent-pink text-white font-bold py-3 rounded-xl hover:bg-accent-pink/90 transition"
-        >
-          Завершить урок
-        </button>
-      </Modal>
-
-      <Modal isOpen={isDiaryModalOpen} onClose={() => setIsDiaryModalOpen(false)} title="Новая запись">
-        <textarea 
-          value={diaryText}
-          onChange={(e) => setDiaryText(e.target.value)}
-          placeholder="Что вас беспокоит или радует сегодня? Выпишите это сюда..."
-          className="w-full h-32 bg-cream p-4 rounded-2xl outline-none border-2 border-transparent focus:border-accent-pink resize-none text-sm text-dark-text placeholder:text-warm-gray mb-4"
-        ></textarea>
-        <button 
-          onClick={handleSaveDiary}
-          disabled={!diaryText.trim()}
-          className="w-full bg-dark-text text-white font-bold py-3 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:bg-black transition"
-        >
-          Сохранить в дневник
-        </button>
-      </Modal>
-
+        {/* ── Courses ── */}
+        <section>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-lg font-black text-dark-text">Курсы</h2>
+            <Link href="/learn" className="text-sm font-bold text-sage-dark hover:opacity-80 flex items-center">
+              Все <ChevronRight size={16} />
+            </Link>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            {loading ? (
+              [1, 2].map(i => <div key={i} className="h-40 bg-cream animate-pulse rounded-3xl" />)
+            ) : (
+              latestCourses.map((course, i) => (
+                <Link key={i} href="/learn" className="bg-white rounded-[1.5rem] overflow-hidden shadow-card border border-beige group">
+                  <div className="h-24 relative overflow-hidden bg-cream">
+                    <img src={course.image || 'https://images.unsplash.com/photo-1544126592-807ade215a0b?auto=format&fit=crop&w=400&q=80'} alt={course.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                    <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
+                      <PlayCircle className="text-white/80" size={24} />
+                    </div>
+                  </div>
+                  <div className="p-3">
+                    <h4 className="font-bold text-dark-text text-[11px] leading-tight mb-1 line-clamp-2 h-7">{course.title}</h4>
+                    <div className="flex items-center justify-between text-[9px] text-warm-gray">
+                      <span>{course.instructor}</span>
+                      <span className="bg-cream px-1.5 py-0.5 rounded font-medium">{course.duration} мин</span>
+                    </div>
+                  </div>
+                </Link>
+              ))
+            )}
+          </div>
+        </section>
+      </div>
     </div>
   );
 }

@@ -3,14 +3,28 @@
 import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/hooks/useAuth';
-import { Menu, X, LogOut, Home, Users, Calendar, BookOpen, CheckSquare, ShoppingBag, User } from 'lucide-react';
-import { useState } from 'react';
+import { useAuthStore } from '@/store/authStore';
+import { Menu, X, LogOut, Home, Users, Calendar, BookOpen, CheckSquare, ShoppingBag, User, ShieldCheck } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 
-export const Header = () => {
+export default function Header() {
   const router = useRouter();
-  const { user, logout, isAuthenticated } = useAuth();
+  const pathname = usePathname();
+  const { user, logout, isAuthenticated, fetchProfile } = useAuthStore();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  if (pathname?.startsWith('/admin')) {
+    return null;
+  }
+
+  useEffect(() => {
+    setMounted(true);
+    if (isAuthenticated) {
+      fetchProfile();
+    }
+  }, [isAuthenticated]);
 
   const handleLogout = () => {
     logout();
@@ -32,27 +46,48 @@ export const Header = () => {
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center space-x-8">
-              {isAuthenticated && (
+              {mounted && isAuthenticated && (
                 <>
                   <Link href="/dashboard" className="text-warm-gray hover:text-accent-pink transition">
                     Dashboard
                   </Link>
-                  <Link href="/specialists" className="text-warm-gray hover:text-accent-pink transition">
+                  <Link href="/care" className="text-warm-gray hover:text-accent-pink transition">
                     Specialists
                   </Link>
-                  <Link href="/courses" className="text-warm-gray hover:text-accent-pink transition">
+                  <Link href="/learn" className="text-warm-gray hover:text-accent-pink transition">
                     Courses
                   </Link>
                   <Link href="/marketplace" className="text-warm-gray hover:text-accent-pink transition">
                     Marketplace
                   </Link>
+                  <Link href="/feed" className="text-warm-gray hover:text-accent-pink transition font-bold flex items-center gap-1">
+                    MamaLife
+                  </Link>
+                  <Link href="/chat" className="text-warm-gray hover:text-accent-pink transition">
+                    Messages
+                  </Link>
+                  <Link href="/pricing" className="text-warm-gray hover:text-accent-pink transition">
+                    Pricing
+                  </Link>
+                  {user?.role === 'admin' && (
+                    <Link href="/admin" className="text-sage font-black hover:text-sage-dark transition flex items-center gap-1">
+                      <ShieldCheck size={16} /> Admin
+                    </Link>
+                  )}
+                  {user?.role === 'specialist' && (
+                    <Link href="/specialist" className="text-accent-pink font-black hover:text-accent-purple transition flex items-center gap-1">
+                      <User size={16} /> Cabinet
+                    </Link>
+                  )}
                 </>
               )}
             </nav>
 
+
+
             {/* Right Side */}
             <div className="hidden md:flex items-center space-x-4">
-              {isAuthenticated ? (
+              {mounted && (isAuthenticated ? (
                 <div className="flex items-center space-x-4">
                   <Link
                     href="/profile"
@@ -83,7 +118,7 @@ export const Header = () => {
                     Sign Up
                   </Link>
                 </div>
-              )}
+              ))}
             </div>
 
             {/* Mobile Menu Toggle */}
@@ -97,7 +132,7 @@ export const Header = () => {
         </div>
 
         {/* Mobile Navigation */}
-        {mobileMenuOpen && (
+        {mounted && mobileMenuOpen && (
           <div className="md:hidden border-t border-beige bg-cream">
             <nav className="px-4 py-4 space-y-3">
               {isAuthenticated && (
@@ -105,16 +140,37 @@ export const Header = () => {
                   <Link href="/dashboard" className="block px-3 py-2 rounded-lg hover:bg-beige transition">
                     Dashboard
                   </Link>
-                  <Link href="/specialists" className="block px-3 py-2 rounded-lg hover:bg-beige transition">
+                  <Link href="/care" className="block px-3 py-2 rounded-lg hover:bg-beige transition">
                     Specialists
                   </Link>
-                  <Link href="/courses" className="block px-3 py-2 rounded-lg hover:bg-beige transition">
+                  <Link href="/learn" className="block px-3 py-2 rounded-lg hover:bg-beige transition">
                     Courses
                   </Link>
                   <Link href="/marketplace" className="block px-3 py-2 rounded-lg hover:bg-beige transition">
                     Marketplace
                   </Link>
+                  <Link href="/feed" className="block px-3 py-2 rounded-lg hover:bg-beige transition font-bold">
+                    MamaLife (Feed)
+                  </Link>
+                  <Link href="/chat" className="block px-3 py-2 rounded-lg hover:bg-beige transition">
+                    Messages
+                  </Link>
+                  <Link href="/pricing" className="block px-3 py-2 rounded-lg hover:bg-beige transition">
+                    Pricing
+                  </Link>
+                  {user?.role === 'admin' && (
+                    <Link href="/admin" className="block px-3 py-2 rounded-lg bg-sage-light text-sage-dark font-bold transition">
+                      Admin Panel
+                    </Link>
+                  )}
+                  {user?.role === 'specialist' && (
+                    <Link href="/specialist" className="block px-3 py-2 rounded-lg bg-[#FCE7F3] text-accent-pink font-bold transition">
+                      Specialist Cabinet
+                    </Link>
+                  )}
                   <button
+
+
                     onClick={handleLogout}
                     className="w-full text-left px-3 py-2 rounded-lg hover:bg-soft-pink transition flex items-center space-x-2"
                   >
@@ -145,4 +201,5 @@ export const Header = () => {
       </header>
     </>
   );
-};
+}
+;

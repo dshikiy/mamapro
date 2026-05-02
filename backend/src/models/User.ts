@@ -12,7 +12,7 @@ export const createUser = async (
     `INSERT INTO users (id, email, name, password, role, subscription, created_at, updated_at)
      VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())
      RETURNING *`,
-    [id, email, name, hashedPassword, 'user', 'free']
+    [id, email, name, hashedPassword, 'mother', 'free']
   );
   return result.rows[0];
 };

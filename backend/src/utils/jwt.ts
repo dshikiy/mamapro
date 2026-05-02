@@ -1,10 +1,14 @@
-import jwt from 'jsonwebtoken';
+import * as jwt from 'jsonwebtoken';
 import { config } from '../config/env';
 
 export const generateToken = (userId: string, role: string): string => {
-  return jwt.sign({ userId, role }, config.jwtSecret, {
-    expiresIn: config.jwtExpire,
-  });
+  return jwt.sign(
+    { userId, role },
+    config.jwtSecret as any,
+    {
+      expiresIn: config.jwtExpire as any,
+    }
+  ) as string;
 };
 
 export const verifyToken = (token: string): any => {
