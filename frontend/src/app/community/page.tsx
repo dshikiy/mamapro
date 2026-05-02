@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { MessageCircle, ShoppingBag, EyeOff, MapPin, Search, Plus, Heart, CheckCircle2 } from 'lucide-react';
+import { MessageCircle, ShoppingBag, EyeOff, MapPin, Search, Plus, CheckCircle2 } from 'lucide-react';
 import Modal from '@/components/ui/Modal';
 
 export default function CommunityPage() {

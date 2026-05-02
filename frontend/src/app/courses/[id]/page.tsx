@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { ArrowLeft, CheckCircle, PlayCircle, Lock, Star, Clock, BookOpen } from 'lucide-react';
 import api from '@/lib/api';
 import { useAuthStore } from '@/store/authStore';
-import { Course, Lesson } from '@/types';
+import { Course } from '@/types';
 
 export default function CoursePage() {
   const params = useParams();

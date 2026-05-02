@@ -142,7 +142,7 @@ export default function ChatPage() {
   const handleCreateGroup = async () => {
     if (!groupTitle.trim() || selectedUsers.length === 0) return;
     try {
-      const res = await api.post('/chat/start', {
+      await api.post('/chat/start', {
         type: 'group',
         title: groupTitle,
         participantIds: selectedUsers.map(u => u.id)

@@ -24,7 +24,7 @@ type DiaryEntry = {
 
 export default function DiaryPage() {
   const router = useRouter();
-  const { user, isAuthenticated } = useAuthStore();
+  const { isAuthenticated } = useAuthStore();
   const [entries, setEntries] = useState<DiaryEntry[]>([]);
   const [selectedMood, setSelectedMood] = useState('happy');
   const [text, setText] = useState('');
