@@ -2,16 +2,16 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { 
-  Calendar, 
-  Clock, 
-  Users, 
-  User, 
-  Settings, 
-  Plus, 
-  Trash2, 
-  CheckCircle2, 
-  ChevronRight, 
+import {
+  Calendar,
+  Clock,
+  Users,
+  User,
+  Settings,
+  Plus,
+  Trash2,
+  CheckCircle2,
+  ChevronRight,
   Home,
   LayoutDashboard,
   Video,
@@ -20,7 +20,6 @@ import {
   Edit,
   Sparkles,
   ArrowLeft,
-  X
 } from 'lucide-react';
 import api from '@/lib/api';
 import { useAuthStore } from '@/store/authStore';
@@ -34,7 +33,7 @@ export default function SpecialistDashboard() {
   const [activeTab, setActiveTab] = useState<TabType>('dashboard');
   const [mounted, setMounted] = useState(false);
   const [loading, setLoading] = useState(true);
-  
+
   // Data states
   const [profile, setProfile] = useState<any>(null);
   const [appointments, setAppointments] = useState<any[]>([]);
@@ -170,9 +169,8 @@ export default function SpecialistDashboard() {
     <div className="min-h-screen bg-[#FDFBF9] flex flex-col md:flex-row">
       {/* Toast */}
       {toast && (
-        <div className={`fixed top-5 left-1/2 -translate-x-1/2 z-[200] px-6 py-3 rounded-2xl shadow-elevated animate-slide-in font-bold text-sm ${
-          toast.type === 'success' ? 'bg-sage text-white' : 'bg-rose-dark text-white'
-        }`}>
+        <div className={`fixed top-5 left-1/2 -translate-x-1/2 z-[200] px-6 py-3 rounded-2xl shadow-elevated animate-slide-in font-bold text-sm ${toast.type === 'success' ? 'bg-sage text-white' : 'bg-rose-dark text-white'
+          }`}>
           {toast.message}
         </div>
       )}
@@ -227,7 +225,7 @@ export default function SpecialistDashboard() {
                 </p>
               </div>
               {activeTab === 'courses' && !selectedCourseId && (
-                <button 
+                <button
                   onClick={() => { setEditingCourse(null); setIsCourseModalOpen(true); }}
                   className="bg-accent-purple text-white px-6 py-3 rounded-2xl font-black text-sm shadow-warm flex items-center gap-2 hover:opacity-90 transition"
                 >
@@ -241,7 +239,7 @@ export default function SpecialistDashboard() {
                 <StatCard label="Всего записей" value={appointments.length} icon={<Users className="text-accent-purple" />} />
                 <StatCard label="Доступно слотов" value={slots.filter(s => !s.is_booked).length} icon={<Clock className="text-sage" />} />
                 <StatCard label="Ваш рейтинг" value={profile?.rating || '5.0'} icon={<CheckCircle2 className="text-amber-500" />} />
-                
+
                 <div className="md:col-span-3 bg-white rounded-[2rem] p-8 border border-beige shadow-card">
                   <h3 className="font-black text-dark-text mb-6">Ближайшие записи</h3>
                   <div className="space-y-4">
@@ -292,9 +290,8 @@ export default function SpecialistDashboard() {
                         </td>
                         <td className="px-6 py-4 text-sm font-medium">{new Date(a.date_time).toLocaleString('ru')}</td>
                         <td className="px-6 py-4">
-                          <span className={`text-[10px] font-black px-2 py-1 rounded-lg uppercase ${
-                            a.status === 'scheduled' ? 'bg-sage-light text-sage-dark' : 'bg-beige text-warm-gray'
-                          }`}>{a.status}</span>
+                          <span className={`text-[10px] font-black px-2 py-1 rounded-lg uppercase ${a.status === 'scheduled' ? 'bg-sage-light text-sage-dark' : 'bg-beige text-warm-gray'
+                            }`}>{a.status}</span>
                         </td>
                         <td className="px-6 py-4">
                           <a href={a.meeting_link} target="_blank" className="text-accent-purple hover:underline text-xs font-bold">Zoom Link</a>
@@ -314,12 +311,11 @@ export default function SpecialistDashboard() {
                     <Plus size={18} /> Добавить слот
                   </button>
                 </div>
-                
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {slots.map(s => (
-                    <div key={s.id} className={`p-5 rounded-3xl border transition-all flex justify-between items-center ${
-                      s.is_booked ? 'bg-beige/30 border-beige opacity-70' : 'bg-white border-beige hover:border-sage shadow-sm'
-                    }`}>
+                    <div key={s.id} className={`p-5 rounded-3xl border transition-all flex justify-between items-center ${s.is_booked ? 'bg-beige/30 border-beige opacity-70' : 'bg-white border-beige hover:border-sage shadow-sm'
+                      }`}>
                       <div>
                         <p className="font-black text-dark-text">{new Date(s.slot_date).toLocaleDateString('ru')}</p>
                         <p className="text-sm font-bold text-warm-gray">{s.slot_time.slice(0, 5)}</p>
@@ -368,13 +364,13 @@ export default function SpecialistDashboard() {
                   </div>
                 ) : (
                   <div className="animate-in fade-in slide-in-from-left-4 duration-300">
-                    <button 
+                    <button
                       onClick={() => setSelectedCourseId(null)}
                       className="mb-8 flex items-center gap-2 text-sm font-black text-warm-gray hover:text-dark-text transition"
                     >
                       <ArrowLeft size={18} /> Назад к списку курсов
                     </button>
-                    
+
                     <div className="bg-white rounded-[3rem] p-10 border border-beige shadow-card">
                       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10">
                         <div>
@@ -383,7 +379,7 @@ export default function SpecialistDashboard() {
                           </h2>
                           <p className="text-sm font-medium text-warm-gray uppercase tracking-widest">Управление программой обучения</p>
                         </div>
-                        <button 
+                        <button
                           onClick={() => { setEditingLesson(null); setIsLessonModalOpen(true); }}
                           className="bg-dark-text text-white px-8 py-3.5 rounded-2xl font-black text-sm shadow-warm flex items-center gap-2 hover:bg-black transition"
                         >
@@ -436,39 +432,39 @@ export default function SpecialistDashboard() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <label className="block space-y-3">
                       <span className="text-xs font-black text-warm-gray uppercase tracking-widest px-1">Ваша роль</span>
-                      <input 
-                        value={profile?.title || ''} 
-                        onChange={e => setProfile({...profile, title: e.target.value})}
+                      <input
+                        value={profile?.title || ''}
+                        onChange={e => setProfile({ ...profile, title: e.target.value })}
                         className="w-full bg-cream border border-beige rounded-2xl px-5 py-4 outline-none focus:border-accent-pink transition font-bold"
                         placeholder="Напр. Доула / Психолог"
                       />
                     </label>
                     <label className="block space-y-3">
                       <span className="text-xs font-black text-warm-gray uppercase tracking-widest px-1">Специализация</span>
-                      <input 
-                        value={profile?.specialty || ''} 
-                        onChange={e => setProfile({...profile, specialty: e.target.value})}
+                      <input
+                        value={profile?.specialty || ''}
+                        onChange={e => setProfile({ ...profile, specialty: e.target.value })}
                         className="w-full bg-cream border border-beige rounded-2xl px-5 py-4 outline-none focus:border-accent-pink transition font-bold"
                         placeholder="Напр. Подготовка к родам"
                       />
                     </label>
                   </div>
-                  
+
                   <label className="block space-y-3">
                     <span className="text-xs font-black text-warm-gray uppercase tracking-widest px-1">Стоимость консультации (₸)</span>
-                    <input 
+                    <input
                       type="number"
-                      value={profile?.price || 0} 
-                      onChange={e => setProfile({...profile, price: parseFloat(e.target.value)})}
+                      value={profile?.price || 0}
+                      onChange={e => setProfile({ ...profile, price: parseFloat(e.target.value) })}
                       className="w-full bg-cream border border-beige rounded-2xl px-5 py-4 outline-none focus:border-accent-pink transition font-bold"
                     />
                   </label>
 
                   <label className="block space-y-3">
                     <span className="text-xs font-black text-warm-gray uppercase tracking-widest px-1">Биография и опыт</span>
-                    <textarea 
-                      value={profile?.bio || ''} 
-                      onChange={e => setProfile({...profile, bio: e.target.value})}
+                    <textarea
+                      value={profile?.bio || ''}
+                      onChange={e => setProfile({ ...profile, bio: e.target.value })}
                       className="w-full bg-cream border border-beige rounded-2xl px-5 py-4 outline-none focus:border-accent-pink transition min-h-[200px] resize-none font-medium leading-relaxed"
                     />
                   </label>
@@ -484,38 +480,38 @@ export default function SpecialistDashboard() {
       </main>
 
       {/* Modals */}
-      <CourseModal 
-        isOpen={isCourseModalOpen} 
-        onClose={() => setIsCourseModalOpen(false)} 
-        course={editingCourse} 
+      <CourseModal
+        isOpen={isCourseModalOpen}
+        onClose={() => setIsCourseModalOpen(false)}
+        course={editingCourse}
         instructorName={profile?.name || user?.name || ''}
-        onSuccess={() => { loadData(); setIsCourseModalOpen(false); showToast(editingCourse ? 'Курс обновлен' : 'Курс создан'); }} 
+        onSuccess={() => { loadData(); setIsCourseModalOpen(false); showToast(editingCourse ? 'Курс обновлен' : 'Курс создан'); }}
       />
-      
-      <LessonModal 
-        isOpen={isLessonModalOpen} 
-        onClose={() => setIsLessonModalOpen(false)} 
-        courseId={selectedCourseId || ''} 
+
+      <LessonModal
+        isOpen={isLessonModalOpen}
+        onClose={() => setIsLessonModalOpen(false)}
+        courseId={selectedCourseId || ''}
         lesson={editingLesson}
-        onSuccess={() => { if (selectedCourseId) loadLessons(selectedCourseId); setIsLessonModalOpen(false); showToast(editingLesson ? 'Урок обновлен' : 'Урок добавлен'); }} 
+        onSuccess={() => { if (selectedCourseId) loadLessons(selectedCourseId); setIsLessonModalOpen(false); showToast(editingLesson ? 'Урок обновлен' : 'Урок добавлен'); }}
       />
 
       <Modal isOpen={isSlotModalOpen} onClose={() => setIsSlotModalOpen(false)} title="Добавить время приема">
         <form onSubmit={handleAddSlot} className="space-y-4">
           <label className="block space-y-1">
             <span className="text-xs font-bold text-warm-gray px-1">Дата</span>
-            <input 
+            <input
               type="date" required
-              value={newSlot.date} onChange={e => setNewSlot({...newSlot, date: e.target.value})}
-              className="w-full bg-cream border border-beige rounded-2xl px-4 py-3 outline-none focus:border-accent-pink" 
+              value={newSlot.date} onChange={e => setNewSlot({ ...newSlot, date: e.target.value })}
+              className="w-full bg-cream border border-beige rounded-2xl px-4 py-3 outline-none focus:border-accent-pink"
             />
           </label>
           <label className="block space-y-1">
             <span className="text-xs font-bold text-warm-gray px-1">Время (HH:MM)</span>
-            <input 
+            <input
               type="time" required
-              value={newSlot.time} onChange={e => setNewSlot({...newSlot, time: e.target.value})}
-              className="w-full bg-cream border border-beige rounded-2xl px-4 py-3 outline-none focus:border-accent-pink" 
+              value={newSlot.time} onChange={e => setNewSlot({ ...newSlot, time: e.target.value })}
+              className="w-full bg-cream border border-beige rounded-2xl px-4 py-3 outline-none focus:border-accent-pink"
             />
           </label>
           <button type="submit" className="w-full bg-accent-pink text-white py-4 rounded-2xl font-black shadow-warm hover:bg-accent-purple transition">
@@ -529,9 +525,8 @@ export default function SpecialistDashboard() {
 
 function NavItem({ active, onClick, icon, label }: { active: boolean, onClick: () => void, icon: any, label: string }) {
   return (
-    <button onClick={onClick} className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 font-bold text-sm ${
-      active ? 'bg-accent-pink text-white shadow-warm translate-x-1' : 'text-warm-gray hover:bg-cream hover:text-dark-text'
-    }`}>
+    <button onClick={onClick} className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 font-bold text-sm ${active ? 'bg-accent-pink text-white shadow-warm translate-x-1' : 'text-warm-gray hover:bg-cream hover:text-dark-text'
+      }`}>
       {icon} {label}
     </button>
   );
@@ -553,8 +548,8 @@ function StatCard({ label, value, icon }: { label: string, value: any, icon: any
 
 // Reuse Modals from Admin with slight adaptations if needed
 function CourseModal({ isOpen, onClose, course, instructorName, onSuccess }: { isOpen: boolean, onClose: () => void, course: any | null, instructorName: string, onSuccess: () => void }) {
-  const [form, setForm] = useState({ 
-    title: '', description: '', category: 'Ментальное здоровье', instructor: instructorName, image: '', duration: '', is_pro: false 
+  const [form, setForm] = useState({
+    title: '', description: '', category: 'Ментальное здоровье', instructor: instructorName, image: '', duration: '', is_pro: false
   });
   const [loading, setLoading] = useState(false);
 
@@ -634,8 +629,8 @@ function LessonModal({ isOpen, onClose, courseId, lesson, onSuccess }: { isOpen:
     e.preventDefault();
     setLoading(true);
     try {
-      const data = { 
-        ...form, 
+      const data = {
+        ...form,
         duration: parseInt(form.duration) || 0,
         order: parseInt(form.order) || 0
       };

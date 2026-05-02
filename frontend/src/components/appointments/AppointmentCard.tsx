@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Appointment } from '@/types';
-import { format, isBefore, isToday } from 'date-fns';
+import { format, isBefore } from 'date-fns';
 import { Calendar, Clock } from 'lucide-react';
 import { Button } from '../shared/Button';
 

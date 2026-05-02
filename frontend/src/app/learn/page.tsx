@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { PlayCircle, Clock, Star, Sparkles, Lock, ChevronRight } from 'lucide-react';
+import { PlayCircle, Clock, Sparkles, Lock, ChevronRight } from 'lucide-react';
 import { SkeletonMarathonCard } from '@/components/ui/SkeletonCard';
 import api from '@/lib/api';
 import { useAuthStore } from '@/store/authStore';

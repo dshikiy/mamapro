@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Heart, Mail, MapPin } from 'lucide-react';
+import { Heart, Mail } from 'lucide-react';
 
 export const Footer = () => {
   return (

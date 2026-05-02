@@ -39,7 +39,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course, onClick }) => {
       {/* Content */}
       <div className="p-5 space-y-3">
         <div className="inline-block px-3 py-1 bg-lavender rounded-full text-xs font-medium text-dark-text">
-          {categoryLabels[course.category]}
+          {categoryLabels[course.category as keyof typeof categoryLabels] || course.category}
         </div>
 
         <h3 className="font-semibold text-dark-text line-clamp-2">{course.title}</h3>

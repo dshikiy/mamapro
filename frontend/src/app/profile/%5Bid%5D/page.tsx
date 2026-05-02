@@ -6,12 +6,9 @@ import {
   MessageCircle, 
   UserPlus, 
   CheckCircle2, 
-  MapPin, 
-  Calendar,
   Grid,
   Heart,
-  ArrowLeft,
-  Sparkles
+  ArrowLeft
 } from 'lucide-react';
 import api from '@/lib/api';
 import { useAuthStore } from '@/store/authStore';
@@ -50,7 +47,7 @@ export default function PublicProfilePage() {
       return;
     }
     try {
-      const res = await api.post('/chat/start', { targetUserId: params.id, type: 'direct' });
+      await api.post('/chat/start', { targetUserId: params.id, type: 'direct' });
       router.push('/chat');
     } catch (e) { console.error(e); }
   };

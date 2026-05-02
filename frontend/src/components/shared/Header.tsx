@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/authStore';
-import { Menu, X, LogOut, Home, Users, Calendar, BookOpen, CheckSquare, ShoppingBag, User, ShieldCheck } from 'lucide-react';
+import { Menu, X, LogOut, User, ShieldCheck } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 
@@ -203,4 +203,3 @@ export default function Header() {
     </>
   );
 }
-;

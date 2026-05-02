@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuthStore } from '@/store/authStore';
-import { Home, Users, PlayCircle, ShoppingBag, Calendar, User, MessageCircle, Sparkles } from 'lucide-react';
+import { Home, ShoppingBag, Calendar, User, MessageCircle, Sparkles } from 'lucide-react';
 
 type NavItem = {
   name: string;

@@ -1,8 +1,8 @@
 import { useState, useCallback } from 'react';
 import api from '@/lib/api';
-import { User } from '@/types';
 
-export const useFetch = <T,>(url: string, dependency?: any[]) => {
+
+export const useFetch = <T,>(url: string) => {
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

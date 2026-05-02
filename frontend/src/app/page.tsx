@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Calendar, PlayCircle, Star, ChevronRight, BookOpen, MessageCircle, Users } from 'lucide-react';
+import { Calendar, PlayCircle, Star, ChevronRight, Users } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
 import api from '@/lib/api';
 
@@ -22,16 +22,7 @@ const CATEGORIES = [
   { label: 'Сон', color: 'bg-beige text-warm-gray', href: '/care?cat=Сон' },
 ];
 
-const SPECIALISTS = [
-  { name: 'Асель Нургалиева', title: 'Перинатальный психолог', rating: 4.9, img: 'https://i.pravatar.cc/150?img=32' },
-  { name: 'Мадина Касымова', title: 'Консультант по ГВ', rating: 5.0, img: 'https://i.pravatar.cc/150?img=43' },
-  { name: 'Тимур Омаров', title: 'Педиатр', rating: 4.8, img: 'https://i.pravatar.cc/150?img=11' },
-];
 
-const COURSES = [
-  { title: 'Послеродовое восстановление', author: 'Асель Н.', time: '42 мин', img: 'https://images.unsplash.com/photo-1544126592-807ade215a0b?auto=format&fit=crop&w=400&q=80' },
-  { title: 'Основы ГВ', author: 'Мадина К.', time: '1 час', img: 'https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?auto=format&fit=crop&w=400&q=80' },
-];
 
 export default function Home() {
   const [activeMood, setActiveMood] = useState<number | null>(null);

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Button } from '../shared/Button';
+
 
 const categories = [
   { id: 'all', label: '🌟 All', count: 24 },

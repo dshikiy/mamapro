@@ -17,7 +17,7 @@ import { useAuthStore } from '@/store/authStore';
 export default function PostDetailPage() {
   const router = useRouter();
   const params = useParams();
-  const { user, isAuthenticated } = useAuthStore();
+  const { isAuthenticated } = useAuthStore();
   const [post, setPost] = useState<any>(null);
   const [comments, setComments] = useState<any[]>([]);
   const [newComment, setNewComment] = useState('');
