@@ -43,11 +43,20 @@ export const updateProfile = asyncHandler(async (req: Request, res: Response) =>
   const userId = req.user!.userId;
   const { name, bio, avatar } = req.body;
 
+  // Update user record
   const result = await query(
     `UPDATE users SET name = COALESCE($1, name), bio = COALESCE($2, bio), avatar = COALESCE($3, avatar), updated_at = NOW()
      WHERE id = $4 RETURNING id, email, name, role, avatar, bio, subscription`,
     [name, bio, avatar, userId]
   );
+
+  // If user is a specialist, sync name and avatar to specialists table
+  if (result.rows[0].role === 'specialist') {
+    await query(
+      `UPDATE specialists SET name = COALESCE($1, name), avatar = COALESCE($2, avatar) WHERE user_id = $3`,
+      [name, avatar, userId]
+    );
+  }
 
   res.status(200).json({ success: true, data: result.rows[0] });
 });

@@ -701,6 +701,7 @@ export default function AdminDashboardPage() {
         isOpen={isCourseModalOpen}
         onClose={() => setIsCourseModalOpen(false)}
         course={editingCourse}
+        specialists={specialists}
         onSuccess={() => { loadCourses(); setIsCourseModalOpen(false); showToast(editingCourse ? 'Курс обновлен' : 'Курс создан'); }}
       />
 
@@ -796,9 +797,9 @@ function AdminTable({ headers, rows }: { headers: string[], rows: { id: string, 
   );
 }
 
-function CourseModal({ isOpen, onClose, course, onSuccess }: { isOpen: boolean, onClose: () => void, course: AdminCourse | null, onSuccess: () => void }) {
+function CourseModal({ isOpen, onClose, course, specialists, onSuccess }: { isOpen: boolean, onClose: () => void, course: AdminCourse | null, specialists: AdminSpecialist[], onSuccess: () => void }) {
   const [form, setForm] = useState({
-    title: '', description: '', category: 'Ментальное здоровье', instructor: '', image: '', duration: '', is_pro: false
+    title: '', description: '', category: 'Ментальное здоровье', instructor: '', instructor_id: '', image: '', duration: '', is_pro: false
   });
   const [loading, setLoading] = useState(false);
 
@@ -809,12 +810,13 @@ function CourseModal({ isOpen, onClose, course, onSuccess }: { isOpen: boolean, 
         description: course.description,
         category: course.category,
         instructor: course.instructor,
+        instructor_id: (course as any).instructor_id || '',
         image: course.image,
         duration: course.duration.toString(),
         is_pro: course.is_pro
       });
     } else {
-      setForm({ title: '', description: '', category: 'Ментальное здоровье', instructor: '', image: '', duration: '', is_pro: false });
+      setForm({ title: '', description: '', category: 'Ментальное здоровье', instructor: '', instructor_id: '', image: '', duration: '', is_pro: false });
     }
   }, [course, isOpen]);
 
@@ -824,9 +826,9 @@ function CourseModal({ isOpen, onClose, course, onSuccess }: { isOpen: boolean, 
     try {
       const data = { ...form, duration: parseInt(form.duration) || 0 };
       if (course) {
-        await api.put(`/api/content/courses/${course.id}`, data);
+        await api.put(`/content/courses/${course.id}`, data);
       } else {
-        await api.post('/api/content/courses', data);
+        await api.post('/content/courses', data);
       }
       onSuccess();
     } catch (e) { console.error(e); } finally { setLoading(false); }
@@ -836,7 +838,22 @@ function CourseModal({ isOpen, onClose, course, onSuccess }: { isOpen: boolean, 
     <Modal isOpen={isOpen} onClose={onClose} title={course ? 'Редактировать курс' : 'Новый курс'}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <input required placeholder="Название курса" className="w-full bg-cream border border-beige rounded-2xl px-4 py-3 outline-none focus:border-sage" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} />
-        <input required placeholder="Инструктор" className="w-full bg-cream border border-beige rounded-2xl px-4 py-3 outline-none focus:border-sage" value={form.instructor} onChange={e => setForm({ ...form, instructor: e.target.value })} />
+        
+        <div className="grid grid-cols-2 gap-4">
+          <input required placeholder="Имя инструктора (текст)" className="w-full bg-cream border border-beige rounded-2xl px-4 py-3 outline-none focus:border-sage" value={form.instructor} onChange={e => setForm({ ...form, instructor: e.target.value })} />
+          
+          <select 
+            className="w-full bg-cream border border-beige rounded-2xl px-4 py-3 outline-none focus:border-sage"
+            value={form.instructor_id}
+            onChange={e => setForm({ ...form, instructor_id: e.target.value })}
+          >
+            <option value="">Выберите специалиста</option>
+            {specialists.map(s => (
+              <option key={s.id} value={s.user_id}>{s.name}</option>
+            ))}
+          </select>
+        </div>
+
         <input required placeholder="Категория" className="w-full bg-cream border border-beige rounded-2xl px-4 py-3 outline-none focus:border-sage" value={form.category} onChange={e => setForm({ ...form, category: e.target.value })} />
         <input required type="number" placeholder="Длительность (мин)" className="w-full bg-cream border border-beige rounded-2xl px-4 py-3 outline-none focus:border-sage" value={form.duration} onChange={e => setForm({ ...form, duration: e.target.value })} />
         <input placeholder="Ссылка на изображение" className="w-full bg-cream border border-beige rounded-2xl px-4 py-3 outline-none focus:border-sage" value={form.image} onChange={e => setForm({ ...form, image: e.target.value })} />
@@ -884,9 +901,9 @@ function LessonModal({ isOpen, onClose, courseId, lesson, onSuccess }: { isOpen:
         order: parseInt(form.order) || 0
       };
       if (lesson) {
-        await api.put(`/api/content/lessons/${lesson.id}`, data);
+        await api.put(`/content/lessons/${lesson.id}`, data);
       } else {
-        await api.post(`/api/content/courses/${courseId}/lessons`, data);
+        await api.post(`/content/courses/${courseId}/lessons`, data);
       }
       onSuccess();
     } catch (e) { console.error(e); } finally { setLoading(false); }

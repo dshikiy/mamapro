@@ -30,6 +30,7 @@ export const initDb = async () => {
         rating FLOAT DEFAULT 5.0,
         price FLOAT NOT NULL,
         availability JSONB,
+        verified BOOLEAN DEFAULT false,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
 
@@ -52,6 +53,8 @@ export const initDb = async () => {
         instructor VARCHAR(255),
         image VARCHAR(255),
         duration INTEGER,
+        is_pro BOOLEAN DEFAULT false,
+        instructor_id UUID REFERENCES users(id),
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
 
@@ -352,6 +355,20 @@ export const initDb = async () => {
       CREATE INDEX IF NOT EXISTS idx_messages_created ON messages(created_at);
       CREATE INDEX IF NOT EXISTS idx_conv_participants_user ON conversation_participants(user_id);
       CREATE INDEX IF NOT EXISTS idx_market_likes_user ON marketplace_likes(user_id);
+
+      -- Patch existing tables with missing columns
+      DO $$ BEGIN
+        ALTER TABLE courses ADD COLUMN IF NOT EXISTS is_pro BOOLEAN DEFAULT false;
+        ALTER TABLE courses ADD COLUMN IF NOT EXISTS instructor_id UUID REFERENCES users(id);
+      EXCEPTION
+        WHEN others THEN NULL;
+      END $$;
+
+      DO $$ BEGIN
+        ALTER TABLE specialists ADD COLUMN IF NOT EXISTS verified BOOLEAN DEFAULT false;
+      EXCEPTION
+        WHEN others THEN NULL;
+      END $$;
     `);
 
     console.log('✅ База данных успешно инициализирована!');

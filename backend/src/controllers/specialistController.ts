@@ -149,22 +149,32 @@ export const getMyProfile = asyncHandler(async (req: Request, res: Response) => 
 
 export const updateMyProfile = asyncHandler(async (req: Request, res: Response) => {
   const userId = req.user!.userId;
-  const { title, bio, specialty, price, avatar } = req.body;
+  const { name, title, bio, specialty, price, avatar } = req.body;
 
+  // Update specialist record
   const result = await query(
     `UPDATE specialists 
-     SET title = COALESCE($1, title), 
-         bio = COALESCE($2, bio), 
-         specialty = COALESCE($3, specialty), 
-         price = COALESCE($4, price),
-         avatar = COALESCE($5, avatar)
-     WHERE user_id = $6 
+     SET name = COALESCE($1, name),
+         title = COALESCE($2, title), 
+         bio = COALESCE($3, bio), 
+         specialty = COALESCE($4, specialty), 
+         price = COALESCE($5, price),
+         avatar = COALESCE($6, avatar)
+     WHERE user_id = $7 
      RETURNING *`,
-    [title, bio, specialty, price, avatar, userId]
+    [name, title, bio, specialty, price, avatar, userId]
   );
 
   if (result.rows.length === 0) {
     throw new AppError(404, 'Профиль специалиста не найден');
+  }
+
+  // Sync name and avatar back to users table if provided
+  if (name || avatar) {
+    await query(
+      `UPDATE users SET name = COALESCE($1, name), avatar = COALESCE($2, avatar) WHERE id = $3`,
+      [name, avatar, userId]
+    );
   }
 
   res.status(200).json({ success: true, data: result.rows[0] });

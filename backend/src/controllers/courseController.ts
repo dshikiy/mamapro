@@ -3,7 +3,7 @@ import { query } from '../config/database';
 import { asyncHandler, AppError } from '../middleware/errorHandler';
 
 export const getCourses = asyncHandler(async (req: Request, res: Response) => {
-  const { category } = req.query;
+  const { category, instructor_id } = req.query;
 
   let sql = `
     SELECT c.*, 
@@ -20,10 +20,20 @@ export const getCourses = asyncHandler(async (req: Request, res: Response) => {
   `;
 
   const params: any[] = [];
+  const conditions: string[] = [];
 
   if (category && category !== 'all') {
-    sql += ` WHERE c.category = $1`;
     params.push(category);
+    conditions.push(`c.category = $${params.length}`);
+  }
+
+  if (instructor_id) {
+    params.push(instructor_id);
+    conditions.push(`c.instructor_id = $${params.length}`);
+  }
+
+  if (conditions.length > 0) {
+    sql += ` WHERE ` + conditions.join(' AND ');
   }
 
   sql += ` GROUP BY c.id ORDER BY c.created_at DESC`;

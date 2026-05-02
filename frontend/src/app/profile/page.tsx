@@ -26,9 +26,14 @@ export default function ProfilePage() {
   
   const [isPatientsModalOpen, setIsPatientsModalOpen] = useState(false);
   const [isAppointmentsModalOpen, setIsAppointmentsModalOpen] = useState(false);
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   
   const [patients, setPatients] = useState<any[]>([]);
   const [myAppointments, setMyAppointments] = useState<any[]>([]);
+  
+  const [editName, setEditName] = useState('');
+  const [editBio, setEditBio] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
   
   const fetchProfile = useAuthStore(state => state.fetchProfile);
 
@@ -42,6 +47,13 @@ export default function ProfilePage() {
       return () => clearTimeout(t);
     }
   }, [toast]);
+
+  useEffect(() => {
+    if (user) {
+      setEditName(user.name || '');
+      setEditBio(user.bio || '');
+    }
+  }, [user]);
 
   if (mounted && !isAuthenticated) {
     router.push('/login');
@@ -66,6 +78,24 @@ export default function ProfilePage() {
     reader.readAsDataURL(file);
   };
 
+  const handleSaveProfile = async () => {
+    if (!editName.trim()) {
+      setToast('Имя не может быть пустым');
+      return;
+    }
+    setIsSaving(true);
+    try {
+      await api.put('/profile', { name: editName, bio: editBio });
+      await fetchProfile();
+      setIsSettingsModalOpen(false);
+      setToast('Профиль успешно обновлен ✨');
+    } catch (err) {
+      setToast('Ошибка при сохранении профиля');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const loadPatients = async () => {
     try {
       const res = await api.get('/appointments/specialist');
@@ -87,7 +117,7 @@ export default function ProfilePage() {
   const handleProfileItem = (id: string) => {
     if (id === 'diary') router.push('/diary');
     else if (id === 'listings') router.push('/marketplace'); // Ideally a separate page, but marketplace is fine for now
-    else if (id === 'settings') setToast('Настройки в разработке');
+    else if (id === 'settings') setIsSettingsModalOpen(true);
     else if (id === 'favorites') router.push('/marketplace'); // Redirect to market for now
     else if (id === 'patients') {
       loadPatients();
@@ -126,7 +156,7 @@ export default function ProfilePage() {
             </div>
             <div className="text-center sm:text-left space-y-2">
               <h2 className="text-2xl font-black text-dark-text leading-tight">{user?.name || 'Мама'}</h2>
-              <p className="text-sm text-warm-gray font-medium">{user?.email}</p>
+              <p className="text-sm text-warm-gray font-medium line-clamp-1">{user?.bio || 'Заполните био в настройках'}</p>
               <div className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest ${isPro ? 'bg-sage-light/30 text-sage-dark' : 'bg-cream text-warm-gray'}`}>
                 {isPro ? <Crown size={12} /> : <CreditCard size={12} />}
                 {isPro ? 'Pro статус активен' : 'Базовый тариф'}
@@ -257,6 +287,48 @@ export default function ProfilePage() {
               </div>
             ))
           )}
+        </div>
+      </Modal>
+
+      {/* Settings Modal */}
+      <Modal isOpen={isSettingsModalOpen} onClose={() => setIsSettingsModalOpen(false)} title="Настройки профиля">
+        <div className="space-y-6">
+          <div className="space-y-2">
+            <label className="text-[10px] font-black text-warm-gray uppercase tracking-widest px-1">Ваше имя</label>
+            <input 
+              type="text" 
+              value={editName}
+              onChange={(e) => setEditName(e.target.value)}
+              className="w-full bg-cream rounded-2xl p-4 border-2 border-transparent focus:border-sage/20 outline-none transition-all font-bold text-dark-text"
+              placeholder="Как вас зовут?"
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <label className="text-[10px] font-black text-warm-gray uppercase tracking-widest px-1">О себе</label>
+            <textarea 
+              value={editBio}
+              onChange={(e) => setEditBio(e.target.value)}
+              className="w-full bg-cream rounded-2xl p-4 border-2 border-transparent focus:border-sage/20 outline-none transition-all font-medium text-dark-text min-h-[120px] resize-none"
+              placeholder="Расскажите о себе..."
+            />
+          </div>
+
+          <div className="pt-4 space-y-3">
+            <button 
+              onClick={handleSaveProfile}
+              disabled={isSaving}
+              className="w-full bg-dark-text text-white py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-warm hover:bg-black transition-all active:scale-95 disabled:opacity-50"
+            >
+              {isSaving ? 'Сохранение...' : 'Сохранить изменения'}
+            </button>
+            <button 
+              onClick={() => setIsSettingsModalOpen(false)}
+              className="w-full bg-cream text-warm-gray py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-beige transition-all"
+            >
+              Отмена
+            </button>
+          </div>
         </div>
       </Modal>
     </div>

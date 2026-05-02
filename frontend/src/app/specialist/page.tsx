@@ -87,7 +87,7 @@ export default function SpecialistDashboard() {
       setSlots(slotsRes.data.data);
 
       if (activeTab === 'courses') {
-        const coursesRes = await api.get('/courses'); // For now show all, ideally filter by specialist
+        const coursesRes = await api.get('/courses', { params: { instructor_id: user?.id } });
         setCourses(coursesRes.data.data);
       }
     } catch (error) {
@@ -429,6 +429,16 @@ export default function SpecialistDashboard() {
             {activeTab === 'profile' && (
               <div className="bg-white rounded-[2.5rem] p-10 border border-beige shadow-card max-w-3xl">
                 <form onSubmit={handleUpdateProfile} className="space-y-8">
+                  <label className="block space-y-3">
+                    <span className="text-xs font-black text-warm-gray uppercase tracking-widest px-1">Ваше ФИО</span>
+                    <input
+                      value={profile?.name || ''}
+                      onChange={e => setProfile({ ...profile, name: e.target.value })}
+                      className="w-full bg-cream border border-beige rounded-2xl px-5 py-4 outline-none focus:border-accent-pink transition font-bold"
+                      placeholder="Напр. Анна Петрова"
+                    />
+                  </label>
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <label className="block space-y-3">
                       <span className="text-xs font-black text-warm-gray uppercase tracking-widest px-1">Ваша роль</span>
