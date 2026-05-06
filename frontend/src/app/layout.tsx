@@ -36,8 +36,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           rel="stylesheet"
         />
       </head>
-      <body className="font-sans antialiased bg-gradient-to-br from-[#FDFBF7] via-[#FCF6EE] to-[#F7EEE5] text-dark-text">
-        <div className="min-h-screen">
+      <body className="font-sans antialiased bg-[url('/bg1.png')] bg-cover bg-fixed bg-no-repeat text-dark-text">
+        <div className="min-h-screen bg-white/40 backdrop-blur-[2px]">
           <Header />
           <main className="mx-auto w-full max-w-7xl px-4 py-6 md:px-8 md:py-8">
             <div className="mx-auto min-h-[calc(100vh-120px)]">{children}</div>

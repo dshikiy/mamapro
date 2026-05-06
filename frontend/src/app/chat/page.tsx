@@ -85,10 +85,19 @@ function ChatContent() {
   }, [searchParams, conversations]);
 
   useEffect(() => {
+    // Poll both conversations and messages to receive new chats/messages
+    const interval = setInterval(() => {
+      loadConversations();
+      if (activeChat) {
+        loadMessages(activeChat.id);
+      }
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [activeChat]);
+
+  useEffect(() => {
     if (activeChat) {
       loadMessages(activeChat.id);
-      const interval = setInterval(() => loadMessages(activeChat.id), 4000);
-      return () => clearInterval(interval);
     }
   }, [activeChat]);
 

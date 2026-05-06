@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/authStore';
 import { Menu, X, LogOut, User, ShieldCheck } from 'lucide-react';
@@ -39,10 +40,14 @@ export default function Header() {
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <Link href="/" className="flex items-center space-x-2 hover:opacity-80 transition">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent-pink to-accent-purple flex items-center justify-center">
-                <span className="text-white font-bold text-lg">M</span>
-              </div>
-              <span className="font-semibold text-dark-text hidden sm:inline">MamPro</span>
+              <Image 
+                src="/logo.png" 
+                alt="MamaPro Logo" 
+                width={120} 
+                height={40} 
+                className="object-contain"
+                priority
+              />
             </Link>
 
             {/* Desktop Navigation */}
